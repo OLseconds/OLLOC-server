@@ -11,3 +11,43 @@ https://leejh.info/archives/232
 - protocol : HTTP/HTTPS
 - language : python (+flask)
 - ssl : Let’s encrypt
+
+#API
+
+# User API
+회원관리 API(회원가입, 로그인, 회원정보조회 등)
+## 로그인
+- URI : azure.kr3.kr/v0.0/user/login
+- METHOD : POST
+- request
+
+| key | explanation | type |
+|--- |--- |--- |
+|  | dd | dd |
+- response code
+## 회원가입
+- URI : azure.kr3.kr/v0.0/user/join
+- METHOD : POST
+- request
+
+| key | explanation | type |
+|--- |--- |--- |
+|  | dd | dd |
+- response code
+## 회원정보 조회
+- URI : azure.kr3.kr/v0.0/user/user_profile
+- METHOD : POST
+- request
+
+| key | explanation | type |
+|--- |--- |--- |
+|  | dd | dd |
+- response code
+
+# Location API
+## 글쓰기
+## 댓글쓰기
+## ~~(너가)~~좋아요
+
+
+화평동 냉면 먹으러 가자
