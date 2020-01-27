@@ -1,68 +1,39 @@
 from flask import Flask
+from flask_restful import Resource, Api, reqparse
 import db, urllib.parse
+from flask_cors import CORS
 
-
-class User:
-    def __init__(self, database):
-        self.database = database
-
-    def user_profile(self):
-        # 유저정보 & 가입여부 체크 메서드
-        pass
-
-    def useradd(self, username, password, name, mail):
-        # 회원가입
-        '''
-        :param username: join user id
-        :param password: join user password
-        :param name: join user name
-        :param mail: join user e-mail ex) test@test.com
-        :return:
-        '''
-        """
-        DB  예시
-        { "_id" : ObjectId("5e2852ea6bc726b9ad8d52c0"), 
-        "username" : "paperlee", "name" : "leejonghwi", 
-        "password" : "", "mail" : "",
-         "intro" : "peekaboo" }
-        """
-        self.database.user_coll.insert({
-            "username": username,
-            "password": password,
-            "name": name,
-            "mail": mail
-        })
-
-    def change_profile(self):
-        # 회원정보 변경
-        pass
-
-    def exit_profile(self):
-        # 회원 탈퇴
-        pass
-
+#https://velog.io/@city7310/flask-restful-A-to-Z-2.-flaskrestful.Resource-flaskrestful.Api 참고 하자 이거
 
 app = Flask(__name__)
+CORS(app)
+title = 'my homepage'
+api = Api(app=app)
 
 
-@app.route('/user')
-def userApi():
-    # user 에 대한 api
-    return 'Hello Flask!'
+class UserApi(Resource):
+    def get(self):
+        return {'msg': 'get ok'}, 201
 
-@app.route('/location')
-def locationApi():
-    # location 에 대한 api
-    return "location api"
+    def post(self):
+        return {'msg': 'post ok'}
 
+    def put(self):
+        return {'msg': 'put ok'}
+
+    def delete(self):
+        return {'msg': 'delete ok'}
+
+
+api.add_resource(UserApi, '/v0.0/test')
 
 
 if __name__ == '__main__':
     f = open("./pwd.txt", 'r')
     database = db.Db(host="127.0.0.1", user="location", pwd=urllib.parse.quote(f.readline()), db="locations")
     f.close()
-    usermod = User(database)
+    usermod = db.User(database)
     usermod.useradd("test", "testpwd", "TEST", "test@test.com")
 
-    app.debug = True
+    #app.debug = True
     app.run(host="0.0.0.0", port="5000")
