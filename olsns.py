@@ -32,20 +32,19 @@ class User:
         :param mail: join user e-mail ex) test@test.com
         :return:
         '''
-
+        try:
         if (not self.username_validation(username)):
-            return 1
+            return False, 1
         elif (self.user_profile(username)["username"] == username):
-            return 2
+            return False, 2
         else:
-            print("가입")
-        #print(test["username"])
-        '''self.database.user_coll.insert_one({
-            "username": username,
-            "password": password,
-            "name": name,
-            "mail": mail
-        })'''
+            self.database.user_coll.insert_one({
+                "username": username,
+                "password": password,
+                "name": name,
+                "mail": mail
+            })
+            return True, 1
 
     def change_profile(self):
         # 회원정보 변경

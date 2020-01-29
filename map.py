@@ -4,21 +4,37 @@ import olsns, urllib.parse
 from flask_cors import CORS
 from OpenSSL import SSL
 
-# https://velog.io/@city7310/flask-restful-A-to-Z-2.-flaskrestful.Resource-flaskrestful.Api 참고 하자 이거
-
 
 class UserApi(Resource):
     def get(self, re_id):
         return {'msg': re_id}
 
     def post(self, re_id):
-        if re_id == "login":
+        f = open("./pwd.txt", 'r')
+        database = olsns.Db(host="127.0.0.1", user="location", pwd=urllib.parse.quote(f.readline()), db="locations")
+        f.close()
+        usermod = olsns.User(database)
+        parser = reqparse.RequestParser()
+
+        if re_id == "session":
             pass
         elif re_id == "join":
-            pass
+            args_list = ['username', 'name', 'password', 'mail']
+            for i in args_list:
+                parser.add_argument(i, location='json')
+            args = parser.parse_args()
+
+            for i in args_list:
+                if not args[i]:
+                    return {'error_code': 0, 'error_msg': i + ' Missing parameters'}, 400
+
+            addMsg = usermod.useradd(username=args['username'], password=args['password'], name=args['name'], mail=args['mail'])
+            if addMsg[0] == False:
+                return {'error_code': addMsg[1], 'error_msg': "Valid username" if addMsg[1] == 1 else "Username already in use"}, 400
+
+            return {'msg':'join ok'}
         elif re_id == "user_profile":
             pass
-
 
         return {'msg': 'post ok'}
 
@@ -36,11 +52,4 @@ api.add_resource(UserApi, '/v0.0/user/<re_id>')
 
 
 if __name__ == '__main__':
-    f = open("./pwd.txt", 'r')
-    database = olsns.Db(host="127.0.0.1", user="location", pwd=urllib.parse.quote(f.readline()), db="locations")
-    f.close()
-    usermod = olsns.User(database)
-    usermod.useradd("test", "testpwd", "TEST", "test@test.com")
-
-    #app.debug = True
     app.run(host="0.0.0.0", port="5000", debug=True, ssl_context=('./cert/server.crt', './cert/server.key'))
