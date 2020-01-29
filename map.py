@@ -2,23 +2,9 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import olsns, urllib.parse
 from flask_cors import CORS
+from OpenSSL import SSL
 
 # https://velog.io/@city7310/flask-restful-A-to-Z-2.-flaskrestful.Resource-flaskrestful.Api 참고 하자 이거
-
-app = Flask(__name__)
-CORS(app)
-title = 'my homepage'
-api = Api(app=app)
-
-
-'''
-azure.kr3.kr/v0.0/user
-azure.kr3.kr/v0.0
-
-https://niceman.tistory.com/101
-이 친구 참고 
-'''
-
 
 
 class UserApi(Resource):
@@ -43,11 +29,11 @@ class UserApi(Resource):
         return {'msg': 'delete ok'}
 
 
+app = Flask(__name__)
+CORS(app)
+api = Api(app=app)
 api.add_resource(UserApi, '/v0.0/user/<re_id>')
 
-@app.route("/")
-def main_page():
-    return "hi"
 
 if __name__ == '__main__':
     f = open("./pwd.txt", 'r')
@@ -57,4 +43,4 @@ if __name__ == '__main__':
     usermod.useradd("test", "testpwd", "TEST", "test@test.com")
 
     #app.debug = True
-    app.run(host="0.0.0.0", port="80", debug=True)
+    app.run(host="0.0.0.0", port="5000", debug=True, ssl_context=('./cert/server.crt', './cert/server.key'))
