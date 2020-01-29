@@ -5,16 +5,20 @@
 
 프론트엔드 레파지토리 : https://github.com/O-Seonsik/OLLOC
 
-https://leejh.info/archives/232
+# 해당 프로젝트 포스팅
+- https://leejh.info/archives/232
+- https://leejh.info/archives/270
+- https://leejh.info/archives/276
+- https://leejh.info/archives/284
 
+
+# 작업환경
 - server : azure 가상머신
 - os : ubuntu 18.04 LTS
 - db : mongodb
 - protocol : HTTP/HTTPS
 - language : python (+flask)
 - ssl : Let’s encrypt
-
-#API
 
 # User API
 회원관리 API(회원가입, 로그인, 회원정보조회 등)
@@ -41,12 +45,20 @@ https://leejh.info/archives/232
 ## 회원정보 조회
 - URI : azure.kr3.kr/v0.0/user/user_profile
 - METHOD : POST
-- request
+- REQUEST :
+    - Header : 
+        - Content-Type : application/json
+    - Body : (json)
 
-| key | explanation | type |
-|--- |--- |--- |
-|  | dd | dd |
-- response code
+        | key | explanation | type |
+        |--- |--- |--- |
+        |username| 회원 아이디 | string |
+        |password| 회원 패스워드 | string |
+        |name| 회원 이름 | string |
+        |mail| 회원 이메일 | string |
+    - ex)
+        - { "username": "test2", "password": "world", "name":"jonghwi", "mail":"ddd@kookmin.ac.kr"}
+- RESPONSE
 
 # Location API
 ## 글쓰기
