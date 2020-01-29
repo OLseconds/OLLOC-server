@@ -3,6 +3,8 @@
 
 해당 레파지토리는 백엔드 부분임 
 
+프론트엔드 레파지토리 : https://github.com/O-Seonsik/OLLOC
+
 https://leejh.info/archives/232
 
 - server : azure 가상머신
@@ -23,7 +25,9 @@ https://leejh.info/archives/232
 
 | key | explanation | type |
 |--- |--- |--- |
-|  | dd | dd |
+| username | user id | string |
+| password | password | string |
+|
 - response code
 ## 회원가입
 - URI : azure.kr3.kr/v0.0/user/join
@@ -50,4 +54,4 @@ https://leejh.info/archives/232
 ## ~~(너가)~~좋아요
 
 
-화평동 냉면 먹으러 가자
+화평동 냉면 먹으러 가
