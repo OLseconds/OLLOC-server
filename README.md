@@ -33,17 +33,9 @@
 | password | password | string |
 |
 - response code
+
 ## 회원가입
 - URI : azure.kr3.kr/v0.0/user/join
-- METHOD : POST
-- request
-
-| key | explanation | type |
-|--- |--- |--- |
-|  | dd | dd |
-- response code
-## 회원정보 조회
-- URI : azure.kr3.kr/v0.0/user/user_profile
 - METHOD : POST
 - REQUEST :
     - Header : 
@@ -59,6 +51,25 @@
     - ex)
         - { "username": "test2", "password": "world", "name":"jonghwi", "mail":"ddd@kookmin.ac.kr"}
 - RESPONSE
+    - Header : 
+        - Content-Type : application/json
+    
+    | key | explanation | type | remarks |
+    | --- |------------ |----- | ------- |
+    |error_code| 오류 코드  | integer | 0 : 파라미터 오류 , 1 : 아이디 유효성 오류 , 2 : 이미 해당 회원 존재
+    |error_msg| 오류 상세내용 | string |
+    |name| 회원 이름 | string |
+    |mail| 회원 이메일 | string |
+
+## 회원정보 조회
+- URI : azure.kr3.kr/v0.0/user/user_profile
+- METHOD : POST
+- request
+
+| key | explanation | type |
+|--- |--- |--- |
+|  | dd | dd |
+- response code
 
 # Location API
 ## 글쓰기
