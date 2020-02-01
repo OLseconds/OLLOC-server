@@ -2,8 +2,6 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import olsns, urllib.parse
 from flask_cors import CORS
-from OpenSSL import SSL
-
 
 class UserApi(Resource):
     def get(self, re_id):
@@ -30,7 +28,7 @@ class UserApi(Resource):
 
             addMsg = usermod.useradd(username=args['username'], password=args['password'], name=args['name'], mail=args['mail'])
             if addMsg[0] == False:
-                return {'error_code': addMsg[1], 'error_msg': "Valid username" if addMsg[1] == 1 else "Username already in use"}, 400
+                return {'error_code': addMsg[1], 'error_msg': "Valid username" if addMsg[1] == 1 else "Username already in use"}, 200
 
             return {'msg':'join ok'}
         elif re_id == "user_profile":
@@ -52,4 +50,5 @@ api.add_resource(UserApi, '/v0.0/user/<re_id>')
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port="5000", debug=True, ssl_context=('./cert/server.crt', './cert/server.key'))
+    app.run(host="0.0.0.0", port="5000", debug=True)
+    #, ssl_context=('./cert/server.crt', './cert/server.key')
