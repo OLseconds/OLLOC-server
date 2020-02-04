@@ -23,7 +23,7 @@
 # User API
 회원관리 API(회원가입, 로그인, 회원정보조회 등)
 ## 로그인
-- URI : azure.kr3.kr/v0.0/user/login
+- URI : olloc.kr3.kr:5000/v0.0/user/session
 - METHOD : POST
 - request
 
@@ -35,7 +35,7 @@
 - response code
 
 ## 회원가입
-- URI : azure.kr3.kr/v0.0/user/join
+- URI : olloc.kr3.kr:5000/v0.0/user/join
 - METHOD : POST
 - REQUEST :
     - Header : 
@@ -62,7 +62,7 @@
     |mail| 회원 이메일 | string |
 
 ## 회원정보 조회
-- URI : azure.kr3.kr/v0.0/user/user_profile
+- URI : olloc.kr3.kr:5000/v0.0/user/user_profile
 - METHOD : POST
 - request
 
@@ -74,7 +74,7 @@
 # Location API
 ## 글쓰기
 ## 댓글쓰기
-## ~~(너가)~~좋아요
+## 좋아요
 
 
 화평동 냉면 먹으러 가
