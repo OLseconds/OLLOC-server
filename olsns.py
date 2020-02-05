@@ -32,7 +32,7 @@ class User:
         :param mail: join user e-mail ex) test@test.com
         :return:
         '''
-
+        print(self.username_validation(username))
         if (not self.username_validation(username)):
             return False, 1
         elif (self.user_profile(username)):
@@ -44,7 +44,7 @@ class User:
                 "name": name,
                 "mail": mail
             })
-            return True, 1
+            return True
 
     def change_profile(self):
         # 회원정보 변경

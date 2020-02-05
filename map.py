@@ -3,7 +3,19 @@ from flask_restful import Resource, Api, reqparse
 import olsns, urllib.parse
 from flask_cors import CORS
 
+
 class UserApi(Resource):
+    def argParser(self, parser, args_list):
+        for i in args_list:
+            parser.add_argument(i, location='json')
+        args = parser.parse_args()
+
+        for i in args_list:
+            if not args[i]:
+                return {'error_code': 0, 'error_msg': i + ' Missing parameters'}, 400
+        return args
+
+
     def get(self, re_id):
         return {'msg': re_id}
 
@@ -17,22 +29,20 @@ class UserApi(Resource):
         if re_id == "session":
             pass
         elif re_id == "join":
-            args_list = ['username', 'name', 'password', 'mail']
-            for i in args_list:
-                parser.add_argument(i, location='json')
-            args = parser.parse_args()
+            # JSON Parser
+            args = self.argParser(parser=parser, args_list=['username', 'name', 'password', 'mail'])
 
-            for i in args_list:
-                if not args[i]:
-                    return {'error_code': 0, 'error_msg': i + ' Missing parameters'}, 400
-
-            addMsg = usermod.useradd(username=args['username'], password=args['password'], name=args['name'], mail=args['mail'])
-            if addMsg[0] == False:
+            try:
+                addMsg = usermod.useradd(username=args['username'], password=args['password'], name=args['name'], mail=args['mail'])
+            except TypeError:
+                return args
+            try:
                 return {'error_code': addMsg[1], 'error_msg': "Valid username" if addMsg[1] == 1 else "Username already in use"}, 200
-
-            return {'msg':'join ok'}
+            except TypeError:
+                return {'msg':'join ok'}, 200
         elif re_id == "user_profile":
             pass
+            #return usermod.user_profile(username)
 
         return {'msg': 'post ok'}
 
