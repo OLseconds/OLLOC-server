@@ -58,31 +58,29 @@
         |    key   | explanation |   type  |
         | -------- | ----------- |-------- |
         |error_code| 오류 코드     | integer | 
-        |error_msg | 오류 상세내용  | string  |
+        |error_msg | 오류 내용  | string  |
         
         - error_code (오류 별 반환 내용 및 상태)
         
             | HTTP STATE | error_code | explanation |
             |----------- | ---------- | ----------- |
             | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
-            | ??? |1|아이디 유효성 오류 | 아이디에 특수문자 존재 등|
-            | ??? |2|해당 회원이 데이터베이스 내 존재|
+            | 202 |1|아이디 유효성 오류 | 아이디에 특수문자 존재 등|
+            | 202 |2|해당 회원이 데이터베이스 내 존재|
     
     - SUCCESS RESPONSE
-    
-    | key | explanation | type | remarks |
-    | --- |------------ |----- | ------- |
-    |name| 회원 이름 | string |
-    |mail| 회원 이메일 | string |
+        
+        | key | explanation | type | remarks |
+        | --- |------------ |----- | ------- |
+
 
 ## 회원정보 조회
-- URI : olloc.kr3.kr:5000/v0.0/user/user_profile
+- URI : olloc.kr3.kr:5000/v0.0/user/[username]
 - METHOD : GET
 - request
+    - Header : 
+        - Content-Type : application/json
 
-| key | explanation | type |
-|--- | --- | --- |
-| username | 회원아이디 | string |
 - RESPONSE
     - Header : 
         - Content-Type : application/json
@@ -92,7 +90,7 @@
         |    key   | explanation |   type  |
         | -------- | ----------- |-------- |
         |error_code| 오류 코드     | integer | 
-        |error_msg | 오류 상세내용  | string  |
+        |error_msg | 오류 내용     | string  |
     
         - error_code (오류 별 반환 내용 및 상태)
         
