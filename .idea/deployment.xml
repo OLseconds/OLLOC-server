@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="paperlee@olloc.kr3.kr:223" showNewOnSourceInSync="false" showNewOnTargetInSync="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="paperlee@olloc.kr3.kr:223 (2)" showNewOnSourceInSync="false" showNewOnTargetInSync="false">
     <serverData>
-      <paths name="Copy of project-level server 'azure'">
+      <paths name="paperlee@olloc.kr3.kr:223 (2)">
         <serverdata>
           <mappings>
-            <mapping deploy="/OLLOC-server" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="paperlee@olloc.kr3.kr:223">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/home/paperlee/OLLOC-server" local="$PROJECT_DIR$" />
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

@@ -35,7 +35,7 @@
 - response code
 
 ## 회원가입
-- URI : olloc.kr3.kr:5000/v0.0/user/join
+- URI : olloc.kr3.kr:5000/v0.0/user
 - METHOD : POST
 - REQUEST :
     - Header : 

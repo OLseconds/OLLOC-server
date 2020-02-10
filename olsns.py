@@ -32,10 +32,10 @@ class User:
         :param mail: join user e-mail ex) test@test.com
         :return:
         '''
-        print(self.username_validation(username))
-        if (not self.username_validation(username)):
+
+        if not self.username_validation(username):
             return False, 1
-        elif (self.user_profile(username)):
+        elif self.user_profile(username):
             return False, 2
         else:
             self.database.user_coll.insert_one({
