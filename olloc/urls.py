@@ -28,7 +28,6 @@ from myapp import views
 
 router = routers.DefaultRouter()
 router.register(r'user', views.UserViewSet)
-router.register(r'post', views.PostViewSet)
 
 
 urlpatterns = [
