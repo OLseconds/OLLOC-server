@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'password', 'name', 'mail')
+        fields = ('username', 'name', 'mail')
 
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):
