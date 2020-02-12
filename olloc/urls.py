@@ -27,8 +27,7 @@ from myapp import views
 
 
 router = routers.DefaultRouter()
-router.register(r'user', views.UserViewSet)
-
+router.register(r'user', views.UserViewSet, basename='user')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
