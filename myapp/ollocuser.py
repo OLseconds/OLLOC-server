@@ -1,5 +1,7 @@
 from myapp.models import User
 from myapp.serializers import UserSerializer
+from django.contrib.auth.models import User as authUser
+from django.contrib import auth
 from rest_framework import status
 import re
 
@@ -7,10 +9,14 @@ class UserMod:
     def __init__(self):
         self.serializer = UserSerializer
 
+    def login(self, username, password, request):
+        user = auth.authenticate()
+        pass
+
     def profile(self, username):
         # 유저정보 & 가입여부 체크 메서드
         try:
-            queryset = User.objects.get(username=username)
+            queryset = authUser.objects.get(username=username)
             return self.serializer(queryset).data
         except:
             return 0
@@ -32,15 +38,20 @@ class UserMod:
         :return:
         '''
 
-        if not self.username_validation(username):
+        '''if not self.username_validation(username):
             return {"error_code": "1", "error_msg": "Valid username"}, status.HTTP_202_ACCEPTED
         elif self.profile(username):
             return {"error_code": "2", "error_msg": "Username already in use"}, status.HTTP_202_ACCEPTED
         else:
             useradd = User(username=username, password=password, name=name, mail=mail)
-            useradd.save()
-
-            return {"msg": "success"}, status.HTTP_200_OK
+            useradd.save()'''
+        if not self.username_validation(username):
+            return {"error_code": "1", "error_msg": "Valid username"}, status.HTTP_400_BAD_REQUEST
+        try:
+            user = authUser.objects.create_user(username=username, password=password, email=mail, last_name=name)
+        except:
+            return {"error_code": "2", "error_msg": "Username already in use"}, status.HTTP_400_BAD_REQUEST
+        return {"msg": "success"}, status.HTTP_200_OK
 
     def change_profile(self):
         # 회원정보 변경

@@ -35,7 +35,7 @@
 - response code
 
 ## 회원가입
-- URI : olloc.kr3.kr:5000/v0.0/user
+- URI : olloc.kr3.kr:8000/v0.0/user
 - METHOD : POST
 - REQUEST :
     - Header : 
@@ -65,8 +65,8 @@
             | HTTP STATE | error_code | explanation |
             |----------- | ---------- | ----------- |
             | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
-            | 202 |1|아이디 유효성 오류 | 아이디에 특수문자 존재 등|
-            | 202 |2|해당 회원이 데이터베이스 내 존재|
+            | 400 |1|아이디 유효성 오류 | 아이디에 특수문자 존재 등|
+            | 400 |2|해당 회원이 데이터베이스 내 존재|
     
     - SUCCESS RESPONSE
         
