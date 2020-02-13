@@ -1,17 +1,13 @@
 from myapp.models import User
 from myapp.serializers import UserSerializer
 from django.contrib.auth.models import User as authUser
-from django.contrib import auth
+
 from rest_framework import status
 import re
 
 class UserMod:
     def __init__(self):
         self.serializer = UserSerializer
-
-    def login(self, username, password, request):
-        user = auth.authenticate()
-        pass
 
     def profile(self, username):
         # 유저정보 & 가입여부 체크 메서드
