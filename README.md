@@ -23,19 +23,41 @@
 # User API
 회원관리 API(회원가입, 로그인, 회원정보조회 등)
 ## 로그인
-- URI : olloc.kr3.kr:5000/v0.0/user/session
+- URI : olloc.kr3.kr:8000/auth/
 - METHOD : POST
 - request
 
-| key | explanation | type |
-|--- |--- |--- |
-| username | user id | string |
-| password | password | string |
-|
+    | key | explanation | type |
+    |--- |--- |--- |
+    | username | user id | string |
+    | password | password | string |
+
 - response code
+    - Header :
+        Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용  | string  |
+        
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
+            | 401 |1| 토큰 만료 | 아이디에 특수문자 존재 등|
+            | 401 |2| 토큰이 존재하지 않음|
+    
+    - SUCCESS RESPONSE
+    | key | explanation | type |
+    |--- |--- |--- |
+    | token | 발급 토큰(클라이언트에서 저장하세요!) | string |
+    | created | 토큰 발급 일 시 | string |
 
 ## 회원가입
-- URI : olloc.kr3.kr:8000/v0.0/user
+- URI : olloc.kr3.kr:8000/user/
 - METHOD : POST
 - REQUEST :
     - Header : 
@@ -75,7 +97,7 @@
 
 
 ## 회원정보 조회
-- URI : olloc.kr3.kr:5000/v0.0/user/[username]
+- URI : olloc.kr3.kr:5000/v0.0/user/
 - METHOD : GET
 - request
     - Header : 
@@ -109,8 +131,52 @@
         |pimg| 회원 프로필 사진 | string | 사진 URL |
 
 
-# Location API
+# Post API
+
+## 글 조회
+
+
 ## 글쓰기
+- URI : olloc.kr3.kr:8000/post/
+- METHOD : POST
+
+- REQUEST :
+    - Header : 
+        - Content-Type : application/json
+        - Authorization : 발급 된 토큰
+    - Body : (json)
+
+        | key | explanation | type |
+        |--- |--- |--- |
+        |description| 게시물 내용 | string |
+        |contents| 사진 및 지도 | string |
+
+    - ex)
+    
+- RESPONSE
+    - Header : 
+        - Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용  | string  |
+        
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
+            | 400 |1|아이디 유효성 오류 | 아이디에 특수문자 존재 등|
+            | 400 |2|해당 회원이 데이터베이스 내 존재|
+    
+    - SUCCESS RESPONSE
+        
+        | key | explanation | type | remarks |
+        | --- |------------ |----- | ------- |
+
+
 ## 댓글쓰기
 ## 좋아요
 
