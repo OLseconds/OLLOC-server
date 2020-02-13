@@ -53,7 +53,7 @@ class AuthViewSet(viewsets.ViewSet):
 
             if start > dest or dest > end:
                 token.delete()
-                return Response({"message": "Token expiration"}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({"error_code":1, error_msg": "Token expiration"}, status=status.HTTP_401_UNAUTHORIZED)
 
             token.created = timezone.now()
             token.save()
@@ -62,7 +62,7 @@ class AuthViewSet(viewsets.ViewSet):
 
             return Response(response, status=status.HTTP_200_OK)
         else:
-            return Response({'error_code': '1', 'error_msg': 'Auth fail'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error_code': '2', 'error_msg': 'Auth fail'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
