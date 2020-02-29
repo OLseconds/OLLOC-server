@@ -29,6 +29,7 @@ from myapp import views
 router = routers.DefaultRouter()
 router.register(r'user', views.UserViewSet, basename='user')
 router.register(r'auth', views.AuthViewSet, basename='auth')
+router.register(r'posts', views.PostsViewSet, basename='posts')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
