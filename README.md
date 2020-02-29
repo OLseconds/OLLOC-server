@@ -15,14 +15,14 @@
 # 작업환경
 - server : azure 가상머신
 - os : ubuntu 18.04 LTS
-- db : mongodb
+- db : MariaDB
 - protocol : HTTP/HTTPS
-- language : python (+flask)
+- language : python django, django-rest-framework
 - ssl : Let’s encrypt
 
 # User API
 회원관리 API(회원가입, 로그인, 회원정보조회 등)
-## 로그인
+## 로그인 (토큰흭득)
 - URI : olloc.kr3.kr:8000/auth/
 - METHOD : POST
 - request
@@ -51,10 +51,11 @@
             | 401 |2| 토큰이 존재하지 않음|
     
     - SUCCESS RESPONSE
-    | key | explanation | type |
-    |--- |--- |--- |
-    | token | 발급 토큰(클라이언트에서 저장하세요!) | string |
-    | created | 토큰 발급 일 시 | string |
+    
+        | key | explanation | type |
+        |--- |--- |--- |
+        | token | 발급 토큰(클라이언트에서 저장하세요!) | string |
+        | created | 토큰 발급 일 시 | string |
 
 ## 회원가입
 - URI : olloc.kr3.kr:8000/user/
