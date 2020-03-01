@@ -8,8 +8,8 @@ from django.utils import timezone
 import pytz
 
 from rest_framework import viewsets
-from myapp.models import User, Post
-from myapp.serializers import UserSerializer, PostSerializer
+from myapp.models import User, Posts
+from myapp.serializers import UserSerializer, PostsSerializer
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -21,10 +21,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from django.contrib import auth
 from rest_framework.authtoken.models import Token
-
+from django.forms import model_to_dict
 from myapp.ollocuser import UserMod
 
-import json
+import os
+
 
 class AuthViewSet(viewsets.ViewSet):
     VALIDATE = 3
@@ -53,7 +54,7 @@ class AuthViewSet(viewsets.ViewSet):
 
             if start > dest or dest > end:
                 token.delete()
-                return Response({"error_code":1, error_msg": "Token expiration"}, status=status.HTTP_401_UNAUTHORIZED)
+                #return Response({"error_code":1, "error_msg": "Token expiration"}, status=status.HTTP_401_UNAUTHORIZED)
 
             token.created = timezone.now()
             token.save()
@@ -63,14 +64,12 @@ class AuthViewSet(viewsets.ViewSet):
             return Response(response, status=status.HTTP_200_OK)
         else:
             return Response({'error_code': '2', 'error_msg': 'Auth fail'}, status=status.HTTP_401_UNAUTHORIZED)
-
+    def options(self, request):
+        print(request)
+        return Response({'message': 'get'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserViewSet(viewsets.ViewSet):
-    """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    """
 
     usermod = UserMod()
 
@@ -94,19 +93,23 @@ class UserViewSet(viewsets.ViewSet):
         return Response({'message': 'get'}, status=status.HTTP_401_UNAUTHORIZED)
 
     def post(self, request):
+
+        print(request.data)
         try:
             response_msg = self.usermod.add(username=request.data['username'], password=request.data['password'],
                                             name=request.data['name'], mail=request.data['mail'])
         except KeyError:
             return Response({'error_code': 0, 'error_msg': 'Missing parameters'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(response_msg[0], status=response_msg[1])
+    def delete(self, request):
+        # 탈퇴 따위 불가능
+        return Response({'message': 'get'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-
-
+class PostsViewSet(viewsets.ViewSet):
+    # queryset = Posts.objects.all()
+    # serializer_class = PostsSerializer
+    usermod = UserMod()
     # 개인 타임라인 가져오기
     def list(self, request):
         return Response({'message': 'list'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -115,10 +118,58 @@ class PostViewSet(viewsets.ModelViewSet):
     def get(self, v):
         return Response({'message': 'get'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    # 글쓰기
+    # 글 수정 & 글쓰기
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
     def post(self, request):
-        return Response(response_msg[0], status=response_msg[1])
+        token = request.META.get('HTTP_AUTHORIZATION')
+
+        if token == None:
+            return Response({'error_code': -1, 'error_msg': 'None token'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            token = Token.objects.get(key=token)
+        except Exception as ex:
+            return Response({'error_code': -1, 'error_msg': 'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 여기부터 글 쓰기
+        user = token.user
+
+        # 이미지 업로드 처리
+        images = request.data.getlist('image')
+        #
+        # print(images[0])
+
+
+        from django.core.files.storage import default_storage
+        from django.core.files.base import ContentFile
+
+        file = images[0]
+        path = default_storage.save('./test.png', ContentFile(file.read()))
+
+        # te = model_to_dict(user) , user.id
+        # post_create = Posts(post_id=)
+        # print(user.id)
+        # print(self.usermod.profile("aqaaa"))
+
+        return Response({'message': 'ㅅㄷㄴㅅ'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+    # 글쓰기
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
+    def put(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION')
+
+        if token == None:
+            return Response({'message': 'None token'}, status=status.HTTP_401_UNAUTHORIZED)
+        try:
+            token = Token.objects.get(key=token)
+        except Exception as ex:
+            return Response({'message': str(ex)}, status=status.HTTP_401_UNAUTHORIZED)
+
+        user = token.user
+        return Response({'message': 'ㅅㄷㄴㅅ'}, status=status.HTTP_401_UNAUTHORIZED)
 
     # 글삭제
     def delete(self, request):
-        return Response(response_msg[0], status=response_msg[1])
+        return Response({'message': 'get'}, status=status.HTTP_401_UNAUTHORIZED)
