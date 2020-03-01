@@ -9,13 +9,6 @@ class UserMod:
     def __init__(self):
         self.serializer = UserSerializer
 
-    def profile(self, username):
-        # 유저정보 & 가입여부 체크 메서드
-        try:
-            queryset = authUser.objects.get(username=username)
-            return self.serializer(queryset).data
-        except:
-            return 0
     def username_validation(self, username):
         '''
         회원 아이디 유효성 검사 메서드
@@ -34,18 +27,11 @@ class UserMod:
         :return:
         '''
 
-        '''if not self.username_validation(username):
-            return {"error_code": "1", "error_msg": "Valid username"}, status.HTTP_202_ACCEPTED
-        elif self.profile(username):
-            return {"error_code": "2", "error_msg": "Username already in use"}, status.HTTP_202_ACCEPTED
-        else:
-            useradd = User(username=username, password=password, name=name, mail=mail)
-            useradd.save()'''
         if not self.username_validation(username):
             return {"error_code": "1", "error_msg": "Valid username"}, status.HTTP_400_BAD_REQUEST
         try:
             user = authUser.objects.create_user(username=username, password=password, email=mail, last_name=name)
-        except:
+        except Exception as ex:
             return {"error_code": "2", "error_msg": "Username already in use"}, status.HTTP_400_BAD_REQUEST
         return {"msg": "success"}, status.HTTP_200_OK
 
@@ -54,5 +40,5 @@ class UserMod:
         pass
 
     def exit_profile(self):
-        # 회원 탈퇴
+        # 회원 탈퇴 그런거 없음
         pass
