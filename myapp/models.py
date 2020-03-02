@@ -10,11 +10,17 @@ class User(models.Model):
 
 
 class Posts(models.Model):
-    post_id = models.IntegerField(verbose_name="게시물 번호", blank=False, null=True)
     owner = models.IntegerField(verbose_name="게시물 소유자", blank=False, null=True)
     last_modified = models.DateTimeField(verbose_name="마지막 수정 시간", blank=False, null=True)
+    date = models.DateTimeField(verbose_name="글쓴 시간", auto_now_add=True, null=True)
     description = models.TextField(verbose_name="게시물 내용", blank=False, null=True)
-    contents = models.TextField(verbose_name="사진 및 좌표", blank=False, null=True)
+
+
+class PostInfo(models.Model):
+    post_id = models.IntegerField(verbose_name="대상 ID", blank=False, null=True)
+    lx = models.CharField(verbose_name="x좌표", max_length=30, null=True)
+    ly = models.CharField(verbose_name="y좌표", max_length=30, null=True)
+    img = models.URLField(verbose_name="이미지 경로", null=True)
 """
 
 post_id : 게시물 번호 integer
