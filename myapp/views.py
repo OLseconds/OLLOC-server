@@ -8,7 +8,7 @@ from django.utils import timezone
 import pytz
 
 from rest_framework import viewsets
-from myapp.models import User, Posts
+from myapp.models import Posts, PostInfo
 from myapp.serializers import UserSerializer, PostsSerializer
 
 from rest_framework import status
@@ -134,24 +134,49 @@ class PostsViewSet(viewsets.ViewSet):
         # 여기부터 글 쓰기
         user = token.user
 
+        # 필수 파라미터 검사
+        for x in ["lx","ly","image","content"]:
+            if not request.data.get(x):
+                return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+
         # 이미지 업로드 처리
         images = request.data.getlist('image')
-        #
-        # print(images[0])
-
-
         from django.core.files.storage import default_storage
         from django.core.files.base import ContentFile
 
-        file = images[0]
-        path = default_storage.save('./test.png', ContentFile(file.read()))
+        allow_type = ["image/png", "image/jpeg", "image/gif"]
+        uploaded_images = []
+        for file in images:
+            if file.content_type in allow_type:
+                path = default_storage.save(os.getcwd() + "/images/" + str(file), ContentFile(file.read()))
+                uploaded_images.append(path.replace(os.getcwd(), ""))
+            else:
+                return Response({'error_code': 3, 'error_msg': 'Upload file format is incorrect', "error_file":str(file)}, status=status.HTTP_400_BAD_REQUEST)
+
+        lX = request.data.getlist('lx')
+        lY = request.data.getlist('ly')
+
+        contxt = request.data.get("content")
+
+        # 글쓰기
+        #mpost = Posts(owner=user.id, description=contxt)
+        new_post = Posts.objects.create(owner=user.id, description=contxt)
+
+        print(new_post.id)
+        # 파일 및 지도 기록
+        for i in range(len(lX)):
+            PostInfo.objects.create(post_id=new_post.id, lx=lX[i], ly=lY[i], img=uploaded_images[i])
 
         # te = model_to_dict(user) , user.id
         # post_create = Posts(post_id=)
         # print(user.id)
         # print(self.usermod.profile("aqaaa"))
 
-        return Response({'message': 'ㅅㄷㄴㅅ'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'message': 'success'}, status=status.HTTP_200_OK)
+
+
+
+
 
 
     # 글쓰기

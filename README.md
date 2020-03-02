@@ -143,16 +143,16 @@
 
 - REQUEST :
     - Header : 
-        - Content-Type : application/json
+        - Content-Type : multipart/form-data
         - Authorization : 발급 된 토큰
     - Body : (json)
 
         | key | explanation | type |
         |--- |--- |--- |
-        |description| 게시물 내용 | string |
-        |contents| 사진 및 지도 | string |
-
-    - ex)
+        |image| 이미지파일 from data | string |
+        |lx| 지도 x 값 | string |
+        |ly| 지도 y 값 | string |
+        |content| 게시물내용 | string |
     
 - RESPONSE
     - Header : 
@@ -163,14 +163,19 @@
         | -------- | ----------- |-------- |
         |error_code| 오류 코드     | integer | 
         |error_msg | 오류 내용  | string  |
+        |error_file| 오류원인 파일| string |
         
         - error_code (오류 별 반환 내용 및 상태)
         
             | HTTP STATE | error_code | explanation |
             |----------- | ---------- | ----------- |
+            | 400 |-1| 토큰에러 auth 로그인 참고 |
             | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
             | 400 |1|아이디 유효성 오류 | 아이디에 특수문자 존재 등|
             | 400 |2|해당 회원이 데이터베이스 내 존재|
+            | 400 |3|업로드 파일 형식 오류 image/XXX 이 아님|
+            
+
     
     - SUCCESS RESPONSE
         
