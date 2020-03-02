@@ -159,18 +159,11 @@ class PostsViewSet(viewsets.ViewSet):
         contxt = request.data.get("content")
 
         # 글쓰기
-        #mpost = Posts(owner=user.id, description=contxt)
         new_post = Posts.objects.create(owner=user.id, description=contxt)
 
-        print(new_post.id)
         # 파일 및 지도 기록
         for i in range(len(lX)):
             PostInfo.objects.create(post_id=new_post.id, lx=lX[i], ly=lY[i], img=uploaded_images[i])
-
-        # te = model_to_dict(user) , user.id
-        # post_create = Posts(post_id=)
-        # print(user.id)
-        # print(self.usermod.profile("aqaaa"))
 
         return Response({'message': 'success'}, status=status.HTTP_200_OK)
 
