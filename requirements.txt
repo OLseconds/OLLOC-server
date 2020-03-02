@@ -3,7 +3,7 @@ asn1crypto==0.24.0
 bson==0.5.8
 certifi==2018.1.18
 chardet==3.0.4
-cryptography==2.1.4
+cryptography==2.3
 dataclasses==0.7
 Django==2.2.10
 django-cors-headers==3.2.1
