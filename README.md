@@ -138,14 +138,14 @@
 
 
 ## 글쓰기
-- URI : olloc.kr3.kr:8000/post/
+- URI : olloc.kr3.kr:8000/posts/
 - METHOD : POST
 
 - REQUEST :
     - Header : 
         - Content-Type : multipart/form-data
         - Authorization : 발급 된 토큰
-    - Body : (json)
+    - Body : (Form)
 
         | key | explanation | type |
         |--- |--- |--- |
@@ -181,6 +181,37 @@
         
         | key | explanation | type | remarks |
         | --- |------------ |----- | ------- |
+## 글 삭제
+- URI : olloc.kr3.kr:8000/posts/
+- METHOD : DELETE
+
+- REQUEST :
+    - Header : 
+        - Authorization : 발급 된 토큰
+    - QUERY PARAMETERS  :
+
+        | key | explanation | type |
+        |--- |--- |--- |
+        |post_id| 삭제할 게시물 번호 | integer |
+    
+- RESPONSE
+    - Header : 
+        - Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용  | string  |
+        
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |-1| 토큰에러 auth 로그인 참고 |
+            | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
+            | 400 |1| 해당 게시물이 존재하지 않 |
+            | 400 |2| 해당 게시물이 본인 소유가 아님 |
 
 
 ## 댓글쓰기
