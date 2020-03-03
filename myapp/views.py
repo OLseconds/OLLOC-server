@@ -8,12 +8,13 @@ from myapp.token import TokenMod
 from myapp.serializers import UserSerializer, PostsSerializer
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.decorators import authentication_classes, permission_classes, action
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from myapp.ollocuser import UserMod
 
 import os
+
 
 class AuthViewSet(viewsets.ViewSet):
     def list(self, request):
@@ -27,7 +28,6 @@ class AuthViewSet(viewsets.ViewSet):
         tokenResult = token.createToken(request)
 
         return Response(tokenResult[0], status=tokenResult[1])
-
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -57,9 +57,8 @@ class UserViewSet(viewsets.ViewSet):
 
 
 class PostsViewSet(viewsets.ViewSet):
-    # queryset = Posts.objects.all()
-    # serializer_class = PostsSerializer
     usermod = UserMod()
+
     # 개인 타임라인 가져오기
     def list(self, request):
         return Response({'message': 'list'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -75,15 +74,14 @@ class PostsViewSet(viewsets.ViewSet):
         # 토큰 인증
         token = TokenMod()
         user = token.tokenAuth(request)
-
-        # 에러 발생 시
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
 
         # 필수 파라미터 검사
         for x in ["lx", "ly", "image", "content"]:
             if not request.data.get(x):
-                return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error_code': 0, 'error_msg': "Missing parameters"},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         # 이미지 업로드 처리
         images = request.data.getlist('image')
@@ -97,7 +95,9 @@ class PostsViewSet(viewsets.ViewSet):
                 path = default_storage.save(os.getcwd() + "/images/" + str(file), ContentFile(file.read()))
                 uploaded_images.append(path.replace(os.getcwd(), ""))
             else:
-                return Response({'error_code': 3, 'error_msg': 'Upload file format is incorrect', "error_file":str(file)}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'error_code': 3, 'error_msg': 'Upload file format is incorrect', "error_file": str(file)},
+                    status=status.HTTP_400_BAD_REQUEST)
 
         lX = request.data.getlist('lx')
         lY = request.data.getlist('ly')
@@ -113,36 +113,22 @@ class PostsViewSet(viewsets.ViewSet):
 
         return Response({'message': 'success'}, status=status.HTTP_200_OK)
 
-    # 글쓰기
+    # 글삭제
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
-    def put(self, request):
+    def delete(self, request):
+        # 토큰 인증
         token = TokenMod()
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
 
-        return Response({'message': 'ㅅㄷㄴㅅ'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    # 글삭제
-    @authentication_classes((TokenAuthentication,))
-    @permission_classes((IsAuthenticated,))
-    def delete(self, request):
-        token = request.META.get('HTTP_AUTHORIZATION')
-
-        if token == None:
-            return Response({'error_code': -1, 'error_msg': 'None token'}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            token = Token.objects.get(key=token)
-        except Exception as ex:
-            return Response({'error_code': -1, 'error_msg': 'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
-
         # 여기부터 글 쓰기
         user = token.user
         post_id = request.query_params.get("post_id")
 
-        if post_id == None:
-           return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        if post_id is None:
+            return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             post_obj = Posts.objects.get(id=post_id)
             if post_obj.owner == user.id:
@@ -153,7 +139,3 @@ class PostsViewSet(viewsets.ViewSet):
                 return Response({'error_code': 2, 'error_msg': 'post is not yours'}, status=status.HTTP_400_BAD_REQUEST)
         except ValueError:
             return Response({'error_code': 1, 'error_msg': "Post does not exist"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
