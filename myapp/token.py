@@ -20,6 +20,8 @@ class TokenMod:
             return {'message': 'None token'}, status.HTTP_401_UNAUTHORIZED
         try:
             token = Token.objects.get(key=token)
+            token.created = timezone.now()
+            token.save()
         except Exception as ex:
             return {'message': str(ex)}, status.HTTP_401_UNAUTHORIZED
 
