@@ -3,6 +3,8 @@
 
 해당 레파지토리는 백엔드 부분임 
 
+Thanks to @zaeval
+
 # 해당 프로젝트 포스팅
 - https://leejh.info/archives/232
 - https://leejh.info/archives/270

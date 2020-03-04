@@ -1,4 +1,4 @@
-from myapp.models import User, Posts
+from myapp.models import User, Posts, PostInfo
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +13,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class PostsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Posts
-        fields = ('post_id', 'owner', 'last_modified', 'description', 'contents')
+        fields = ('id', 'owner', 'last_modified', 'description')
+
+class PostInfoSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PostInfo
+        fields = ('post_id', 'lx', 'ly', 'img')
 
 

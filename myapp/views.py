@@ -5,7 +5,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from myapp.models import Posts, PostInfo
 from myapp.token import TokenMod
-from myapp.serializers import UserSerializer, PostsSerializer
+from myapp.serializers import UserSerializer, PostsSerializer, PostInfoSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes, action
@@ -59,13 +59,33 @@ class UserViewSet(viewsets.ViewSet):
 class PostsViewSet(viewsets.ViewSet):
     usermod = UserMod()
 
-    # 개인 타임라인 가져오기
+    # 게시물 가져오기
     def list(self, request):
-        return Response({'message': 'list'}, status=status.HTTP_401_UNAUTHORIZED)
+        # 토큰 인증
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
+        post_id = request.query_params.get("post_id")
 
-    # 특정 사용자 타임라인 가져오기
-    def get(self, v):
-        return Response({'message': 'get'}, status=status.HTTP_401_UNAUTHORIZED)
+        if post_id is None:
+            return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            post_obj = Posts.objects.get(id=post_id)
+            ps = PostsSerializer(post_obj)
+            postInfo_obj = PostInfo.objects.filter(post_id=ps.data["id"])
+
+            return_dict = ps.data
+
+            for x in postInfo_obj:
+                for key, value in PostInfoSerializer(x).data.items():
+                    if not key in return_dict:
+                        return_dict[key] = []
+                    return_dict[key].append(value)
+
+            return Response(return_dict, status=status.HTTP_200_OK)
+        except ValueError:
+            return Response({'error_code': 1, 'error_msg': "Post does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
     # 글 수정 & 글쓰기
     @authentication_classes((TokenAuthentication,))
