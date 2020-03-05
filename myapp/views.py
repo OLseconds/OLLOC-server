@@ -12,26 +12,40 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from myapp.ollocuser import UserMod
-
+from rest_framework.views import APIView
 import os
 
+class Auth(APIView):
+    """
+        로그인 인증
 
-class AuthViewSet(viewsets.ViewSet):
-    def list(self, request):
-        return Response({'message': 'bad request'}, status=status.HTTP_400_UNAUTHORIZED)
-
-    def get(self, request):
-        return Response({'message': 'bad request'}, status=status.HTTP_400_UNAUTHORIZED)
+        ---
+        # 내용
+            - username : 회원 아이디
+            - password : 회원 패스워드
+    """
+    def list(self):
+        return Response({"msg": "hi"}, status=status.HTTP_200_OK)
 
     def post(self, request):
+        '''
+            Sample의 list를 불러오는 API postpost
+            ---
+            # 내용
+                - username : 회원 아이디
+                - password : 회원 패스워드
+        '''
         token = TokenMod()
         tokenResult = token.createToken(request)
 
         return Response(tokenResult[0], status=tokenResult[1])
 
 
-class UserViewSet(viewsets.ViewSet):
+
+
+class UserViewSet(APIView):
     usermod = UserMod()
+
 
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
@@ -56,7 +70,7 @@ class UserViewSet(viewsets.ViewSet):
         return Response({'message': 'get'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class PostsViewSet(viewsets.ViewSet):
+class PostView(APIView):
     usermod = UserMod()
 
     # 게시물 가져오기
@@ -92,6 +106,7 @@ class PostsViewSet(viewsets.ViewSet):
     @permission_classes((IsAuthenticated,))
     def post(self, request):
         # 토큰 인증
+        serializer = PostsSerializer
         token = TokenMod()
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
