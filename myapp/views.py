@@ -126,25 +126,6 @@ class PostView(APIView):
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
     def delete(self, request):
-        # 토큰 인증
-        token = TokenMod()
-        user = token.tokenAuth(request)
-        if str(type(user)) == "<class 'tuple'>":
-            return Response(user[0], user[1])
+        delete_post = self.snsmod.delete_post(request)
 
-        # 여기부터 글 삭
-        user = token.user
-        post_id = request.query_params.get("post_id")
-
-        if post_id is None:
-            return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            post_obj = Posts.objects.get(id=post_id)
-            if post_obj.owner == user.id:
-                # 삭제
-                post_obj.delete()
-                return Response({'message': "success"}, status=status.HTTP_200_OK)
-            else:
-                return Response({'error_code': 2, 'error_msg': 'post is not yours'}, status=status.HTTP_400_BAD_REQUEST)
-        except ValueError:
-            return Response({'error_code': 1, 'error_msg': "Post does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(delete_post[0], delete_post[1])
