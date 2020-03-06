@@ -81,6 +81,7 @@ class SNS:
 
         lX = request.data.getlist('lx')
         lY = request.data.getlist('ly')
+        mi = request.data.getlist('map_info')
 
         contxt = request.data.get("content")
 
@@ -89,6 +90,6 @@ class SNS:
 
         # 파일 및 지도 기록
         for i in range(len(lX)):
-            PostInfo.objects.create(post_id=new_post.id, lx=lX[i], ly=lY[i], img=uploaded_images[i])
+            PostInfo.objects.create(post_id=new_post.id, lx=lX[i], ly=lY[i], map_info=mi[i], img=uploaded_images[i])
 
         return {'message': 'success'}, status.HTTP_200_OK

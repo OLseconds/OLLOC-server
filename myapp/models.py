@@ -20,6 +20,7 @@ class PostInfo(models.Model):
     post_id = models.IntegerField(verbose_name="대상 게시물 ID", blank=False, null=True)
     lx = models.CharField(verbose_name="x좌표", max_length=30, null=True)
     ly = models.CharField(verbose_name="y좌표", max_length=30, null=True)
+    map_info = models.TextField(verbose_name="지도 정보", null=True)
     img = models.URLField(verbose_name="이미지 경로", null=True)
 
 

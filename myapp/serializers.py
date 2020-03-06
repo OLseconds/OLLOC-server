@@ -1,13 +1,14 @@
-from myapp.models import User, Posts, PostInfo
+from myapp.models import Posts, PostInfo
 from rest_framework import serializers
+from django.contrib.auth.models import User as authUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.Serializer):
     class Meta:
-        model = User
-        fields = ('username', 'name', 'mail')
+        model = authUser
+        fields = ('username', 'password', 'name', 'mail')
 
 
 class PostsSerializer(serializers.HyperlinkedModelSerializer):
@@ -19,7 +20,7 @@ class PostsSerializer(serializers.HyperlinkedModelSerializer):
 class PostInfoSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PostInfo
-        fields = ('post_id', 'lx', 'ly', 'img')
+        fields = ('post_id', 'lx', 'ly', 'map_info', 'img')
 
 
 class CommentsSerializer(serializers.HyperlinkedModelSerializer):

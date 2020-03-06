@@ -24,7 +24,9 @@ class Auth(APIView):
             - username : 회원 아이디
             - password : 회원 패스워드
     """
-    def list(self):
+    serializer_class = UserSerializer
+
+    def get(self, request):
         return Response({"msg": "hi"}, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -75,7 +77,7 @@ class PostView(APIView):
     snsmod = SNS()
 
     # 게시물 가져오기
-    def list(self, request):
+    def get(self, request):
         # 토큰 인증
         token = TokenMod()
         user = token.tokenAuth(request)
