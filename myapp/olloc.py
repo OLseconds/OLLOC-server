@@ -127,33 +127,20 @@ class SNS:
         except ValueError:
             return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
 
-    def wirte_comment(self, request):
+    def write_comment(self, request):
         token = TokenMod()
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return user[0], user[1]
 
-        user = token.user
-
-        p = Posts.objects.get(id=request.data.get("post_id"))
-        print(p)
         try:
+            Posts.objects.get(id=request.data.get("post_id"))
+        except Posts.DoesNotExist:
+            return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
+
+        if request.data.get("post_id") and request.data.get("description"):
             comm = Comments(post_id=request.data.get("post_id"), owner=user.id, description=request.data.get("description"))
             comm.save()
-        except:
+        else:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
-
-
-
-        # if post_id is None:
-        #     return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
-        # try:
-        #     post_obj = Posts.objects.get(id=post_id)
-        #     if post_obj.owner == user.id:
-        #         # 삭제
-        #         post_obj.delete()
-        #         return {'message': "success"}, status.HTTP_200_OK
-        #     else:
-        #         return {'error_code': 2, 'error_msg': 'post is not yours'}, status.HTTP_400_BAD_REQUEST
-        # except ValueError:
-        #     return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
+        return {'message': "success"}, status.HTTP_200_OK

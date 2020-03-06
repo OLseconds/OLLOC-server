@@ -133,6 +133,7 @@ class PostView(APIView):
 
 class Comment(APIView):
     serializer_class = CommentsSerializer
+    snsmod = SNS()
 
     # 댓글 가져오기
     def get(self, request):
