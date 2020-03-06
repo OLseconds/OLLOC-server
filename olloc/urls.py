@@ -46,6 +46,7 @@ urlpatterns = [
     url('auth/', views.Auth.as_view()),
     url('posts/', views.PostView.as_view()),
     url('user/', views.UserViewSet.as_view()),
+    url('comment/', views.Comment.as_view()),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),

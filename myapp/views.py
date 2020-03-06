@@ -3,7 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 
 from rest_framework import viewsets
-from myapp.models import Posts, PostInfo
+
 from myapp.token import TokenMod
 from myapp.serializers import UserSerializer, PostsSerializer, PostInfoSerializer
 from rest_framework import status
@@ -129,3 +129,25 @@ class PostView(APIView):
         delete_post = self.snsmod.delete_post(request)
 
         return Response(delete_post[0], delete_post[1])
+
+
+class Comment(APIView):
+    serializer_class = CommentsSerializer
+
+    # 댓글 가져오기
+    def get(self, request):
+        pass
+
+    # 댓글 쓰기
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
+    def post(self, request):
+        new_comment = self.snsmod.write_comment(request)
+
+        return Response(new_comment[0], new_comment[1])
+
+    # 댓글 삭제
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
+    def delete(self, request):
+        pass
