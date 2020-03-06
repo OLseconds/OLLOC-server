@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes, action
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from myapp.ollocuser import UserMod
+from myapp.olloc import *
 from rest_framework.views import APIView
 import os
 
@@ -72,6 +72,7 @@ class UserViewSet(APIView):
 
 class PostView(APIView):
     usermod = UserMod()
+    snsmod = SNS()
 
     # 게시물 가져오기
     def list(self, request):
@@ -105,48 +106,9 @@ class PostView(APIView):
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
     def post(self, request):
-        # 토큰 인증
-        serializer = PostsSerializer
-        token = TokenMod()
-        user = token.tokenAuth(request)
-        if str(type(user)) == "<class 'tuple'>":
-            return Response(user[0], user[1])
+        new_post = self.snsmod.write_post(request)
 
-        # 필수 파라미터 검사
-        for x in ["lx", "ly", "image", "content"]:
-            if not request.data.get(x):
-                return Response({'error_code': 0, 'error_msg': "Missing parameters"},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-        # 이미지 업로드 처리
-        images = request.data.getlist('image')
-        from django.core.files.storage import default_storage
-        from django.core.files.base import ContentFile
-
-        allow_type = ["image/png", "image/jpeg", "image/gif"]
-        uploaded_images = []
-        for file in images:
-            if file.content_type in allow_type:
-                path = default_storage.save(os.getcwd() + "/images/" + str(file), ContentFile(file.read()))
-                uploaded_images.append(path.replace(os.getcwd(), ""))
-            else:
-                return Response(
-                    {'error_code': 3, 'error_msg': 'Upload file format is incorrect', "error_file": str(file)},
-                    status=status.HTTP_400_BAD_REQUEST)
-
-        lX = request.data.getlist('lx')
-        lY = request.data.getlist('ly')
-
-        contxt = request.data.get("content")
-
-        # 글쓰기
-        new_post = Posts.objects.create(owner=user.id, description=contxt)
-
-        # 파일 및 지도 기록
-        for i in range(len(lX)):
-            PostInfo.objects.create(post_id=new_post.id, lx=lX[i], ly=lY[i], img=uploaded_images[i])
-
-        return Response({'message': 'success'}, status=status.HTTP_200_OK)
+        return Response(new_post[0], new_post[1])
 
     # 글삭제
     @authentication_classes((TokenAuthentication,))
