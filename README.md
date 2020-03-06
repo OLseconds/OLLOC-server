@@ -102,12 +102,11 @@ Thanks to @zaeval
 - METHOD : GET
 - request
     - Header : 
-        - Content-Type : application/json
+        - Authorization : 발급 된 토큰
 
 - RESPONSE
-    - Header : 
+    - Header :
         - Content-Type : application/json
-        
     - ERROR RESPONSE
     
         |    key   | explanation |   type  |
@@ -119,18 +118,25 @@ Thanks to @zaeval
         
             | HTTP STATE | error_code | explanation |
             |----------- | ---------- | ----------- |
-            | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
-            | ??? |1|아이디 유효성 오류 | 아이디에 특수문자 존재 등|
+            | 400 |-1| 토큰에러 auth 로그인 참고 |
     
     - SUCCESS RESPONSE
     
         | key | explanation | type | remarks |
         | --- |------------ |----- | ------- |
-        |name| 회원 이름 | string |
-        |mail| 회원 이메일 | string |
-        |name| 전화번호 | string | private : 비공개 |
-        |pimg| 회원 프로필 사진 | string | 사진 URL |
-
+        |id| 회원 번 | integer |
+        |usernaem| 회원 아이 | string |
+        |email| 회원 이메일 | string |  |
+        |is_superuser| 관리자 여부 | boolean |  |
+        |is_active| 활성화 여 | boolean |  |
+{
+"id": 1,
+"username": "paperlee",
+"name": "이종휘",
+"email": "paperlee@kookmin.ac.kr",
+"is_superuser": false,
+"is_active": true
+}
 
 # Post API
 

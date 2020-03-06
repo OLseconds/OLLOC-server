@@ -24,6 +24,7 @@ class Auth(APIView):
             - username : 회원 아이디
             - password : 회원 패스워드
     """
+    queryset = authUser.objects.all()
     serializer_class = UserSerializer
 
     def get(self, request):
@@ -47,15 +48,23 @@ class Auth(APIView):
 
 class UserViewSet(APIView):
     usermod = UserMod()
-
+    token = TokenMod()
 
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
-    def list(self, request):
-        return Response({'message': 'list'}, status=status.HTTP_401_UNAUTHORIZED)
-
     def get(self, request):
-        return Response({'message': 'get'}, status=status.HTTP_401_UNAUTHORIZED)
+        user = self.token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
+
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'name': user.last_name,
+            'email': user.email,
+            'is_superuser': user.is_superuser,
+            'is_active': user.is_active
+        }, status=status.HTTP_200_OK)
 
     def post(self, request):
 
@@ -76,6 +85,7 @@ class PostView(APIView):
     usermod = UserMod()
     snsmod = SNS()
 
+    serializer_class = PostsSerializer
     # 게시물 가져오기
     def get(self, request):
         # 토큰 인증
@@ -122,7 +132,7 @@ class PostView(APIView):
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
 
-        # 여기부터 글 쓰기
+        # 여기부터 글 삭
         user = token.user
         post_id = request.query_params.get("post_id")
 

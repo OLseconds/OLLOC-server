@@ -17,7 +17,7 @@ class TokenMod:
         token = request.META.get('HTTP_AUTHORIZATION')
 
         if token == None:
-            return {'message': 'None token'}, status.HTTP_401_UNAUTHORIZED
+            return {'error_code':-1, 'error_msg': 'None token'}, status.HTTP_401_UNAUTHORIZED
         try:
             token = Token.objects.get(key=token)
             token.created = timezone.now()
