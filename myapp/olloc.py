@@ -98,7 +98,7 @@ class SNS:
         token = TokenMod()
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
-            return user[0], user[1]
+           return user[0], user[1]
 
         # 여기부터 글 삭제
         user = token.user
@@ -140,6 +140,20 @@ class SNS:
 
         if request.data.get("post_id") and request.data.get("description"):
             comm = Comments(post_id=request.data.get("post_id"), owner=user.id, description=request.data.get("description"))
+            comm.save()
+        else:
+            return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
+        return {'message': "success"}, status.HTTP_200_OK
+
+    def write_comment(self, post_id, description, owner):
+
+        try:
+            Posts.objects.get(id=post_id)
+        except Posts.DoesNotExist:
+            return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
+
+        if post_id and description:
+            comm = Comments(post_id=post_id, owner=owner, description=description)
             comm.save()
         else:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
