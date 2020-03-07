@@ -5,12 +5,13 @@ from django.shortcuts import render
 from rest_framework import viewsets
 
 from myapp.token import TokenMod
-from myapp.serializers import UserSerializer, PostsSerializer, PostInfoSerializer
+from myapp.serializers import UserSerializer, PostsSerializer, PostInfoSerializer, FollowersSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes, action
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from myapp.models import Followers
 from myapp.olloc import *
 from rest_framework.views import APIView
 import os
@@ -135,12 +136,12 @@ class PostView(viewsets.ViewSet):
         return Response(delete_post[0], delete_post[1])
 
 
-class Comment(APIView):
+class Comment(viewsets.ViewSet):
     serializer_class = CommentsSerializer
     snsmod = SNS()
 
     # 댓글 가져오기
-    def get(self, request):
+    def list(self, request):
         pass
 
     # 댓글 쓰기
@@ -157,14 +158,33 @@ class Comment(APIView):
     def delete(self, request):
         pass
 
-class Follow(APIView):
-    # 팔로우 하
+class FollowViewSet(viewsets.ViewSet):
+
+    def list(self, request):
+        return Response({'message': "아직 구현중"}, status.HTTP_200_OK)
+
+    # 팔로우 하기
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
     def post(self, request):
-        new_comment = self.snsmod.write_comment(request)
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
 
-        return Response(new_comment[0], new_comment[1])
+        following = request.data.get("following")
+
+        if not following:
+            return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST)
+        try:
+            following_id = authUser.objects.get(username=following)
+
+            f = Followers.objects.create(follower=user.id, following=following_id.id)
+            f.save()
+
+            return Response({'message': "success"}, status.HTTP_200_OK)
+        except authUser.DoesNotExist:
+            return Response({'error_code': 1, 'error_msg': "Following target is invalid"}, status.HTTP_400_BAD_REQUEST)
 
     # 언 팔로우 하기
     @authentication_classes((TokenAuthentication,))

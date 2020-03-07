@@ -94,6 +94,7 @@ class SNS:
             PostInfo.objects.create(post_id=new_post.id, lx=lX[i], ly=lY[i], map_info=mi[i], img=uploaded_images[i])
 
         return {'message': 'success'}, status.HTTP_200_OK
+
     def delete_post(self, request):
         token = TokenMod()
         user = token.tokenAuth(request)
