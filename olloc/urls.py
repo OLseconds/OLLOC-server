@@ -24,9 +24,9 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 router = routers.DefaultRouter()
-# router.register(r'user', views.UserViewSet, basename='user')
-#router.register(r'auth', views.AuthViewSet.as_view(), basename='auth')
-# router.register(r'posts', views.PostsViewSet, basename='posts')
+router.register(r'user', views.UserViewSet, basename='user')
+router.register(r'auth', views.Auth, basename='auth')
+router.register(r'posts', views.PostView, basename='posts')
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -43,10 +43,11 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url('auth/', views.Auth.as_view()),
-    url('posts/', views.PostView.as_view()),
-    url('user/', views.UserViewSet.as_view()),
-    url('comment/', views.Comment.as_view()),
+    # url('auth/', views.Auth.as_view()),
+    # url('posts/', views.PostView.as_view()),
+    # url('user/', views.UserViewSet.as_view()),
+    # url('comment/', views.Comment.as_view()),
+    # url('follow/', views.Follow.as_view()),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),

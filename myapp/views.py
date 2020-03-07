@@ -15,7 +15,7 @@ from myapp.olloc import *
 from rest_framework.views import APIView
 import os
 
-class Auth(APIView):
+class Auth(viewsets.ViewSet):
     """
         로그인 인증
 
@@ -29,7 +29,7 @@ class Auth(APIView):
     token = TokenMod()
     user = token
 
-    def get(self, request):
+    def list(self, request):
         # auth = tokenAuth(self, request)
         return Response({"msg": "hi"}, status=status.HTTP_200_OK)
 
@@ -50,13 +50,13 @@ class Auth(APIView):
 
 
 
-class UserViewSet(APIView):
+class UserViewSet(viewsets.ViewSet):
     usermod = UserMod()
     token = TokenMod()
 
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
-    def get(self, request):
+    def list(self, request):
         user = self.token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
@@ -85,13 +85,13 @@ class UserViewSet(APIView):
         return Response({'message': 'get'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class PostView(APIView):
+class PostView(viewsets.ViewSet):
     usermod = UserMod()
     snsmod = SNS()
 
     serializer_class = PostsSerializer
     # 게시물 가져오기
-    def get(self, request):
+    def list(self, request):
         # 토큰 인증
         token = TokenMod()
         user = token.tokenAuth(request)
@@ -104,7 +104,7 @@ class PostView(APIView):
         try:
             post_obj = Posts.objects.get(id=post_id)
             ps = PostsSerializer(post_obj)
-            postInfo_obj = PostInfo.objects.filter(post_id=ps.data["id"])
+            postInfo_obj = PostInfo.objects.filter(post_id=post_id)
 
             return_dict = ps.data
 
@@ -152,6 +152,21 @@ class Comment(APIView):
         return Response(new_comment[0], new_comment[1])
 
     # 댓글 삭제
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
+    def delete(self, request):
+        pass
+
+class Follow(APIView):
+    # 팔로우 하
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
+    def post(self, request):
+        new_comment = self.snsmod.write_comment(request)
+
+        return Response(new_comment[0], new_comment[1])
+
+    # 언 팔로우 하기
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
     def delete(self, request):
