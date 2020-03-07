@@ -138,10 +138,83 @@ Thanks to @zaeval
 "is_active": true
 }
 
+## 팔로잉
+- URI : olloc.kr3.kr:8000/follow/
+- METHOD : POST
+- request
+    - Header : 
+        - Authorization : 발급 된 토큰
+        - Content-Type : application/json
+
+- RESPONSE
+    - Header :
+        - Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용     | string  |
+    
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |-1| 토큰에러 auth 로그인 참고 |
+            | 400 | 0 | 파라미터 오류 |
+            | 400 | 1 | 팔로잉 대상이 올바르지 않음 |
+    
+    - SUCCESS RESPONSE
+    
+        | key | explanation | type | remarks |
+        | --- |------------ |----- | ------- |
+## 언팔로잉
+
+
 # Post API
 
 ## 글 조회
+- URI : olloc.kr3.kr:8000/posts/
+- METHOD : POST
 
+- REQUEST :
+    - Header : 
+        - Authorization : 발급 된 토큰
+    - QUERY PARAMETERS  : 
+
+        | key | explanation | type |
+        |--- |--- |--- |
+        |post_id| 게시물 번호 | string |
+    
+- RESPONSE
+    - Header : 
+        - Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용  | string  |
+        
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |-1| 토큰에러 auth 로그인 참고 |
+            | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
+            | 400 |1|아이디 유효성 오류 | 아이디에 특수문자 존재 등|
+            
+    - SUCCESS RESPONSE
+        
+        |   key  | explanation | type | remarks |
+        | ------ | ----------- |----- | ------- |
+        |post_id | 게시물 번호   |array(integer) | dd |
+        |lx| 지도 x값 | array(string)|
+        |ly| 지도 y값 | array(string)|
+        |map_info|맵설명|array(string)|
+        |img| 사진 | array(string)|
+        
+       
 
 ## 글쓰기
 - URI : olloc.kr3.kr:8000/posts/
