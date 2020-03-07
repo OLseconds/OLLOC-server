@@ -26,8 +26,11 @@ class Auth(APIView):
     """
     queryset = authUser.objects.all()
     serializer_class = UserSerializer
+    token = TokenMod()
+    user = token
 
     def get(self, request):
+        # auth = tokenAuth(self, request)
         return Response({"msg": "hi"}, status=status.HTTP_200_OK)
 
     def post(self, request):

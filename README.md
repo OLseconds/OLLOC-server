@@ -98,7 +98,7 @@ Thanks to @zaeval
 
 
 ## 회원정보 조회
-- URI : olloc.kr3.kr:5000/v0.0/user/
+- URI : olloc.kr3.kr:8000/user/
 - METHOD : GET
 - request
     - Header : 
