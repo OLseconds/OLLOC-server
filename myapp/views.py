@@ -43,8 +43,9 @@ class Auth(APIView):
         '''
         token = TokenMod()
         tokenResult = token.createToken(request)
-
+        print(request.data)
         return Response(tokenResult[0], status=tokenResult[1])
+
 
 
 

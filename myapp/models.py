@@ -30,3 +30,15 @@ class Comments(models.Model):
     description = models.TextField(verbose_name="게시물 내용", blank=False, null=True)
     date = models.DateTimeField(verbose_name="글쓴 시간", auto_now_add=True, null=True)
     last_modified = models.DateTimeField(verbose_name="마지막 수정 시간", blank=False, null=True)
+
+
+class Follow(models.Model):
+    follower = models.IntegerField(verbose_name="팔로워", blank=False, null=True)
+    followering = models.IntegerField(verbose_name="팔로잉 한 사람", blank=False, null=True)
+    date = models.DateTimeField(verbose_name="팔로우 시간", auto_now_add=True, null=True)
+
+class PushList(models.Model):
+    owner = models.IntegerField(verbose_name="팔로잉 한 사람", blank=False, null=True)
+    description = models.TextField(verbose_name="게시물 내용", blank=False, null=True)
+    link = models.DateTimeField(verbose_name="팔로우 시간", auto_now_add=True, null=True)
+

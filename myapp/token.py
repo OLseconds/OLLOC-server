@@ -14,10 +14,25 @@ class TokenMod:
         pass
 
     def tokenAuth(self, request):
-        token = request.META.get('HTTP_AUTHORIZATION')
+        t = request.META.get('HTTP_AUTHORIZATION')
+        if not t:
+            return {'error_code': -2, 'error_msg': 'check HTTP_AUTHORIZATION'}, status.HTTP_401_UNAUTHORIZED
+        try:
+            token = Token.objects.get(key=t)
+        except:
+            return {'error_code': -1, 'error_msg': 'Invalid Token'}, status.HTTP_401_UNAUTHORIZED
 
         if token == None:
-            return {'error_code':-1, 'error_msg': 'None token'}, status.HTTP_401_UNAUTHORIZED
+            return {'error_code': -1, 'error_msg': 'None token'}, status.HTTP_401_UNAUTHORIZED
+
+        d = timedelta(days=self.VALIDATE)
+        start = token.created.replace(tzinfo=pytz.UTC)
+        dest = (datetime.now()).replace(tzinfo=pytz.UTC)
+        end = (token.created + d).replace(tzinfo=pytz.UTC)
+
+        if start > dest or dest > end:
+            token.delete()
+            return {'error_code': -1, 'error_msg': 'Token expiration'}, status.HTTP_401_UNAUTHORIZED
         try:
             token = Token.objects.get(key=token)
             token.created = timezone.now()
@@ -51,3 +66,16 @@ class TokenMod:
             return {"token": token.key, "created": token.created}, status.HTTP_200_OK
         else:
             return {'error_code': '2', 'error_msg': 'Auth fail'}, status.HTTP_401_UNAUTHORIZED
+
+    def delete_token(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION')
+
+        if token == None:
+            return {'error_code': -1, 'error_msg': 'None token'}, status.HTTP_401_UNAUTHORIZED
+        try:
+            token = Token.objects.get(key=token)
+            token.delete()
+        except Exception as ex:
+            return {'message': str(ex)}, status.HTTP_401_UNAUTHORIZED
+
+        return token.user

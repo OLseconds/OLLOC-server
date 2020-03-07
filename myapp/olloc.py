@@ -133,6 +133,7 @@ class SNS:
         if str(type(user)) == "<class 'tuple'>":
             return user[0], user[1]
 
+
         try:
             Posts.objects.get(id=request.data.get("post_id"))
         except Posts.DoesNotExist:
