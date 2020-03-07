@@ -27,3 +27,9 @@ class CommentsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PostInfo
         fields = ('post_id', 'owner', 'description', 'date', 'last_modified')
+
+
+class FollowersSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PostInfo
+        fields = ('follower', 'following', 'date')
