@@ -221,6 +221,44 @@ Thanks to @zaeval
 
 
 ## 댓글쓰기
+- URI : olloc.kr3.kr:8000/comment/
+- METHOD : POST
+
+- REQUEST :
+    - Header : 
+        - Content-Type : application/json
+        - Authorization : 발급 된 토큰
+    - Body :
+
+        | key | explanation | type |
+        |--- |--- |--- |
+        |post_id| 대상 게시물 id | string |
+        |description| 댓글 내용 | string |
+    
+- RESPONSE
+    - Header : 
+        - Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용  | string  |
+        
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |-1| 토큰에러 auth 로그인 참고 |
+            | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
+            | 400 |1| 해당 게시물이 존재하지 않음 | 
+            
+
+    
+    - SUCCESS RESPONSE
+        
+        | key | explanation | type | remarks |
+        | --- |------------ |----- | ------- |
 ## 좋아요
 
 # 냉면 맛집면
