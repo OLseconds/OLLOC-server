@@ -150,7 +150,7 @@ Thanks to @zaeval
     - QUERY PARAMETER : 
  
         | key | explanation | type | etc |
-        |--- |--- |--- | |
+        |--- |--- |--- |--- |
         |user_id|팔로잉 목록 조회할 아이디| integer| 미 입력 시 본인 팔로우 리스트 출력 | 
         
 - RESPONSE
