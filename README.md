@@ -143,6 +143,36 @@ Thanks to @zaeval
 
 ## 팔로잉
 - URI : olloc.kr3.kr:8000/follow/
+- METHOD : GET
+- request
+    - Header : 
+        - Authorization : 발급 된 토큰
+    - QUERY PARAMETER : 
+ 
+        | key | explanation | type | etc |
+        |--- |--- |--- | |
+        |user_id|팔로잉 목록 조회할 아이디| integer| 미 입력 시 본인 팔로우 리스트 출력 | 
+        
+- RESPONSE
+    - Header :
+        - Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용     | string  |
+    
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |-1| 토큰에러 auth 로그인 참고 |
+            | 400 | 0 | 파라미터 오류 |
+            | 400 | 1 | 팔로잉 대상이 올바르지 않음 |
+
+## 팔로잉
+- URI : olloc.kr3.kr:8000/follow/
 - METHOD : POST
 - request
     - Header : 
@@ -178,7 +208,6 @@ Thanks to @zaeval
 - request
     - Header : 
         - Authorization : 발급 된 토큰
-        - Content-Type : application/json
     - QUERY PARAMETER : 
  
         | key | explanation | type |

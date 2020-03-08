@@ -173,7 +173,9 @@ class FollowViewSet(viewsets.ViewSet):
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
-        re_dict = self.snsmod.follow_list(user.id)
+        m = request.query_params.get("user_id")
+
+        re_dict = self.snsmod.follow_list(m if m else user.id)
 
         return Response(re_dict, status.HTTP_200_OK)
 
