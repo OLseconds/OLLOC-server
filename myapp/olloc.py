@@ -96,7 +96,7 @@ class SNS:
                 path = default_storage.save(os.getcwd() + "/images/" + str(file), ContentFile(file.read()))
                 uploaded_images.append(path.replace(os.getcwd(), ""))
             else:
-                return {'error_code': 3, 'error_msg': 'Upload file format is incorrect', "error_file": str(file)}, \
+                return {'error_code': 1, 'error_msg': 'Upload file format is incorrect', "error_file": str(file)}, \
                        status.HTTP_400_BAD_REQUEST
 
         lX = request.data.getlist('lx')
@@ -104,11 +104,6 @@ class SNS:
         mi = request.data.getlist('map_info')
 
         contxt = request.data.get("content")
-        print(lX)
-        print(lY)
-        print(mi)
-        print(images)
-        print(contxt)
         # 글쓰기
         new_post = Posts.objects.create(owner=user.id, description=contxt)
 
