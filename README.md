@@ -241,7 +241,10 @@ Thanks to @zaeval
         
         |   key  | explanation | type | remarks |
         | ------ | ----------- |----- | ------- |
-        |post_id | 게시물 번호   |array(integer) | dd |
+        |id | 게시물 번호   |integer |
+        |owner | 게시물 소유자   | integer |
+        |last_modified | 마지막 수정시간 | time |
+        |description | 게시물 내 |string |
         |lx| 지도 x값 | array(string)|
         |ly| 지도 y값 | array(string)|
         |map_info|맵설명|array(string)|

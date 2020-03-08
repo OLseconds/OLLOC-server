@@ -48,6 +48,25 @@ class SNS:
     def __init__(self):
         pass
 
+    def get_post(self, post_id):
+        try:
+            post_obj = Posts.objects.get(id=post_id)
+            ps = PostsSerializer(post_obj)
+            postInfo_obj = PostInfo.objects.filter(post_id=post_id)
+
+            return_dict = ps.data
+
+            for x in postInfo_obj:
+                for key, value in PostInfoSerializer(x).data.items():
+                    if not key in return_dict:
+                        return_dict[key] = []
+
+                    return_dict[key].append(SERVER_URL + value if key is "img" else value)
+
+            return Response(return_dict, status=status.HTTP_200_OK)
+        except ValueError:
+            pass
+
     def write_post(self, request):
         """
 
@@ -59,7 +78,7 @@ class SNS:
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return user[0], user[1]
-
+        print(request.data)
         # 필수 파라미터 검사
         for x in ["lx", "ly", "image", "content"]:
             if not request.data.get(x):
