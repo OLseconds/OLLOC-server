@@ -131,7 +131,6 @@ class SNS:
            return user[0], user[1]
 
         # 여기부터 글 삭제
-        user = token.user
         post_id = request.query_params.get("post_id")
 
         if post_id is None:
@@ -146,23 +145,15 @@ class SNS:
                 return {'error_code': 2, 'error_msg': 'post is not yours'}, status.HTTP_400_BAD_REQUEST
         except ValueError:
             return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
+        except Posts.DoesNotExist:
+            return{'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
 
-    def delete_post(self, request, post_id):
-        if post_id is None:
-            return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
-        try:
-            post_obj = Posts.objects.get(id=post_id)
-            post_obj.delete()
-            return {'message': "success"}, status.HTTP_200_OK
-        except ValueError:
-            return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
 
     def write_comment(self, request):
         token = TokenMod()
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return user[0], user[1]
-
 
         try:
             Posts.objects.get(id=request.data.get("post_id"))
@@ -171,20 +162,6 @@ class SNS:
 
         if request.data.get("post_id") and request.data.get("description"):
             comm = Comments(post_id=request.data.get("post_id"), owner=user.id, description=request.data.get("description"))
-            comm.save()
-        else:
-            return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
-        return {'message': "success"}, status.HTTP_200_OK
-
-    def write_comment(self, post_id, description, owner):
-
-        try:
-            Posts.objects.get(id=post_id)
-        except Posts.DoesNotExist:
-            return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
-
-        if post_id and description:
-            comm = Comments(post_id=post_id, owner=owner, description=description)
             comm.save()
         else:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
