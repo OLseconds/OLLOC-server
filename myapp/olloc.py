@@ -10,6 +10,11 @@ class UserMod:
     def __init__(self):
         self.serializer = UserSerializer
 
+    def user_profile(self, user_id):
+        user = authUser.objects.get(id=user_id)
+
+        return user
+
     def username_validation(self, username):
         '''
         회원 아이디 유효성 검사 메서드

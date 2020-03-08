@@ -123,6 +123,7 @@ Thanks to @zaeval
             | HTTP STATE | error_code | explanation |
             |----------- | ---------- | ----------- |
             | 400 |-1| 토큰에러 auth 로그인 참고 |
+            | 400 |1| 일치하는 회원이 없음 |
     
     - SUCCESS RESPONSE
     
@@ -246,12 +247,11 @@ Thanks to @zaeval
 
 - REQUEST :
     - Header : 
-        - Authorization : 발급 된 토큰
     - QUERY PARAMETERS  : 
 
         | key | explanation | type |
         |--- |--- |--- |
-        |post_id| 게시물 번호 | string |
+        |post_id| 게시물 번호 | integer |
     
 - RESPONSE
     - Header : 
@@ -276,7 +276,10 @@ Thanks to @zaeval
         |   key  | explanation | type | remarks |
         | ------ | ----------- |----- | ------- |
         |id | 게시물 번호   |integer |
-        |owner | 게시물 소유자   | integer |
+        |owner["id"] | 게시물 번호 | integer |
+        |owner["username"] | 회원 아이디   | string |
+        |owner["name"] | 회원 이름 | string |
+        |owner["profile_img"] | 회원 프로필 사진 | string(url) |
         |last_modified | 마지막 수정시간 | time |
         |description | 게시물 내 |string |
         |lx| 지도 x값 | array(string)|

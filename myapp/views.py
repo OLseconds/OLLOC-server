@@ -65,12 +65,13 @@ class UserViewSet(viewsets.ViewSet):
 
         user_id = request.query_params.get("user_id")
         if user_id:
-            user = authUser.objects.get(id=user_id)
+            try:
+                user = self.usermod.user_profile(user_id)
+            except authUser.DoesNotExist:
+                return Response({'error_code': 1, 'error_msg': 'This user does not exist'})
 
         following = Followers.objects.filter(follower=user_id)
         follower = Followers.objects.filter(following=user_id)
-
-
 
         return Response({
             'id': user.id,
@@ -105,12 +106,10 @@ class PostView(viewsets.ViewSet):
     # 게시물 가져오기
     def list(self, request):
         # 토큰 인증
-        token = TokenMod()
-        user = token.tokenAuth(request)
-        SERVER_URL = getattr(settings, 'SERVER_URL', 'localhost')
 
-        if str(type(user)) == "<class 'tuple'>":
-            return Response(user[0], user[1])
+        SERVER_URL = getattr(settings, 'SERVER_URL', 'localhost')
+        usermod = UserMod()
+
         post_id = request.query_params.get("post_id")
 
         if post_id is None:
@@ -121,6 +120,15 @@ class PostView(viewsets.ViewSet):
             postInfo_obj = PostInfo.objects.filter(post_id=post_id)
 
             return_dict = ps.data
+            owner = usermod.user_profile(return_dict["owner"])
+
+            return_dict["owner"] = {
+                'id': owner.id,
+                'username': owner.username,
+                'name': owner.last_name,
+                'profile_img': "https://placehold.it/58x58",
+            }
+            print(return_dict["owner"])
 
             for x in postInfo_obj:
                 for key, value in PostInfoSerializer(x).data.items():
