@@ -77,8 +77,6 @@ class UserViewSet(viewsets.ViewSet):
         }, status=status.HTTP_200_OK)
 
     def post(self, request):
-
-        print(request.data)
         try:
             response_msg = self.usermod.add(username=request.data['username'], password=request.data['password'],
                                             name=request.data['name'], mail=request.data['mail'])
@@ -167,7 +165,7 @@ class Comment(viewsets.ViewSet):
         pass
 
 class FollowViewSet(viewsets.ViewSet):
-
+    snsmod = SNS()
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
     def list(self, request):
@@ -175,18 +173,8 @@ class FollowViewSet(viewsets.ViewSet):
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
+        re_dict = self.snsmod.follow_list(user.id)
 
-        following = Followers.objects.filter(follower=user.id)
-        follower = Followers.objects.filter(following=user.id)
-        re_dict = {
-            "follower" : len(follower),
-            "following": len(following),
-            "following_list": []
-        }
-
-
-        for x in following:
-            re_dict["following_list"].append(FollowersSerializer(x).data["following"])
         return Response(re_dict, status.HTTP_200_OK)
 
     # 팔로우 하기
@@ -198,7 +186,7 @@ class FollowViewSet(viewsets.ViewSet):
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
 
-        following = request.data.get("following")
+        following = request.data.get("user_id")
 
         if not following:
             return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST)
@@ -220,16 +208,16 @@ class FollowViewSet(viewsets.ViewSet):
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
 
-        unfollowing = request.data.get("unfollowing")
+        unfollowing = request.query_params.get("user_id")
 
         if not unfollowing:
             return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST)
         try:
-            unfollowing_id = authUser.objects.get(username=unfollowing)
-
-            f = Followers.objects.get(follower=user.id, following=unfollowing_id.id)
+            f = Followers.objects.get(follower=user.id, following=unfollowing)
             f.delete()
 
             return Response({'message': "success"}, status.HTTP_200_OK)
         except authUser.DoesNotExist:
             return Response({'error_code': 1, 'error_msg': "Unfollowing target is invalid"}, status.HTTP_400_BAD_REQUEST)
+        except Followers.DoesNotExist:
+            return Response({'error_code': 2, 'error_msg': "Not Followed target"}, status.HTTP_400_BAD_REQUEST)

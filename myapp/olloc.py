@@ -85,7 +85,11 @@ class SNS:
         mi = request.data.getlist('map_info')
 
         contxt = request.data.get("content")
-
+        print(lX)
+        print(lY)
+        print(mi)
+        print(images)
+        print(contxt)
         # 글쓰기
         new_post = Posts.objects.create(owner=user.id, description=contxt)
 
@@ -160,3 +164,16 @@ class SNS:
         else:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
         return {'message': "success"}, status.HTTP_200_OK
+
+    def follow_list(self, user_id):
+        following = Followers.objects.filter(follower=user_id)
+        follower = Followers.objects.filter(following=user_id)
+        re_dict = {
+            "follower": len(follower),
+            "following": len(following),
+            "following_list": []
+        }
+
+        for x in following:
+            re_dict["following_list"].append(FollowersSerializer(x).data["following"])
+        return re_dict
