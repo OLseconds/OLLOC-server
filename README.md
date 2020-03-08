@@ -125,7 +125,7 @@ Thanks to @zaeval
         | key | explanation | type | remarks |
         | --- |------------ |----- | ------- |
         |id| 회원 번 | integer |
-        |usernaem| 회원 아이 | string |
+        |username| 회원 아이 | string |
         |email| 회원 이메일 | string |  |
         |is_superuser| 관리자 여부 | boolean |  |
         |is_active| 활성화 여 | boolean |  |
@@ -231,6 +231,7 @@ Thanks to @zaeval
         |image| 이미지파일 from data | string |
         |lx| 지도 x 값 | string |
         |ly| 지도 y 값 | string |
+        |map_info| 지도 상세내용| string|
         |content| 게시물내용 | string |
     
 - RESPONSE
