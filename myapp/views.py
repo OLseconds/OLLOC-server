@@ -3,6 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 
 from rest_framework import viewsets
+from django.conf import settings
 
 from myapp.token import TokenMod
 from myapp.serializers import UserSerializer, PostsSerializer, PostInfoSerializer, FollowersSerializer
@@ -61,6 +62,8 @@ class UserViewSet(viewsets.ViewSet):
         user = self.token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
+        following = Followers.objects.filter(follower=user.id)
+        follower = Followers.objects.filter(following=user.id)
 
         return Response({
             'id': user.id,
@@ -68,7 +71,9 @@ class UserViewSet(viewsets.ViewSet):
             'name': user.last_name,
             'email': user.email,
             'is_superuser': user.is_superuser,
-            'is_active': user.is_active
+            'is_active': user.is_active,
+            'follower': len(follower),
+            'following': len(following),
         }, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -96,6 +101,8 @@ class PostView(viewsets.ViewSet):
         # 토큰 인증
         token = TokenMod()
         user = token.tokenAuth(request)
+        SERVER_URL = getattr(settings, 'SERVER_URL', 'localhost')
+
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
         post_id = request.query_params.get("post_id")
@@ -113,7 +120,8 @@ class PostView(viewsets.ViewSet):
                 for key, value in PostInfoSerializer(x).data.items():
                     if not key in return_dict:
                         return_dict[key] = []
-                    return_dict[key].append(value)
+
+                    return_dict[key].append(SERVER_URL + value if key is "img" else value)
 
             return Response(return_dict, status=status.HTTP_200_OK)
         except ValueError:
@@ -160,8 +168,26 @@ class Comment(viewsets.ViewSet):
 
 class FollowViewSet(viewsets.ViewSet):
 
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
     def list(self, request):
-        return Response({'message': "아직 구현중"}, status.HTTP_200_OK)
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
+
+        following = Followers.objects.filter(follower=user.id)
+        follower = Followers.objects.filter(following=user.id)
+        re_dict = {
+            "follower" : len(follower),
+            "following": len(following),
+            "following_list": []
+        }
+
+
+        for x in following:
+            re_dict["following_list"].append(FollowersSerializer(x).data["following"])
+        return Response(re_dict, status.HTTP_200_OK)
 
     # 팔로우 하기
     @authentication_classes((TokenAuthentication,))
@@ -177,10 +203,9 @@ class FollowViewSet(viewsets.ViewSet):
         if not following:
             return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST)
         try:
-            following_id = authUser.objects.get(username=following)
+            following_id = authUser.objects.get(id=following)
 
-            f = Followers.objects.create(follower=user.id, following=following_id.id)
-            f.save()
+            f = Followers.objects.get_or_create(follower=user.id, following=following)
 
             return Response({'message': "success"}, status.HTTP_200_OK)
         except authUser.DoesNotExist:
@@ -190,4 +215,21 @@ class FollowViewSet(viewsets.ViewSet):
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
     def delete(self, request):
-        pass
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
+
+        unfollowing = request.data.get("unfollowing")
+
+        if not unfollowing:
+            return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST)
+        try:
+            unfollowing_id = authUser.objects.get(username=unfollowing)
+
+            f = Followers.objects.get(follower=user.id, following=unfollowing_id.id)
+            f.delete()
+
+            return Response({'message': "success"}, status.HTTP_200_OK)
+        except authUser.DoesNotExist:
+            return Response({'error_code': 1, 'error_msg': "Unfollowing target is invalid"}, status.HTTP_400_BAD_REQUEST)

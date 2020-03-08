@@ -1,4 +1,4 @@
-from myapp.models import Posts, PostInfo
+from myapp.models import Posts, PostInfo, Followers
 from rest_framework import serializers
 from django.contrib.auth.models import User as authUser
 from rest_framework.response import Response
@@ -31,5 +31,5 @@ class CommentsSerializer(serializers.HyperlinkedModelSerializer):
 
 class FollowersSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = PostInfo
+        model = Followers
         fields = ('follower', 'following', 'date')

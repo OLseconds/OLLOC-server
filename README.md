@@ -125,10 +125,13 @@ Thanks to @zaeval
         | key | explanation | type | remarks |
         | --- |------------ |----- | ------- |
         |id| 회원 번 | integer |
-        |username| 회원 아이 | string |
+        |username| 회원 아이디  | string |
         |email| 회원 이메일 | string |  |
         |is_superuser| 관리자 여부 | boolean |  |
-        |is_active| 활성화 여 | boolean |  |
+        |is_active| 활성화 여부 | boolean |  |
+        |follower|팔로워 수 | integer|
+        |following|팔로잉 수 | integer|
+        
 {
 "id": 1,
 "username": "paperlee",
@@ -145,7 +148,12 @@ Thanks to @zaeval
     - Header : 
         - Authorization : 발급 된 토큰
         - Content-Type : application/json
-
+    - Body : (json)
+    
+        | key | explanation | type |
+        |--- |--- |--- |
+        |following|팔로잉 대상 user number| integer|
+        
 - RESPONSE
     - Header :
         - Content-Type : application/json
@@ -175,7 +183,7 @@ Thanks to @zaeval
 
 ## 글 조회
 - URI : olloc.kr3.kr:8000/posts/
-- METHOD : POST
+- METHOD : GET
 
 - REQUEST :
     - Header : 
