@@ -128,7 +128,6 @@ class PostView(viewsets.ViewSet):
                 'name': owner.last_name,
                 'profile_img': "https://placehold.it/58x58",
             }
-            print(return_dict["owner"])
 
             for x in postInfo_obj:
                 for key, value in PostInfoSerializer(x).data.items():

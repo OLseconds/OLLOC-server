@@ -93,12 +93,18 @@ class SNS:
         images = request.data.getlist('image')
         from django.core.files.storage import default_storage
         from django.core.files.base import ContentFile
+        from urllib import parse
 
         allow_type = ["image/png", "image/jpeg", "image/gif"]
         uploaded_images = []
         for file in images:
             if file.content_type in allow_type:
-                path = default_storage.save(os.getcwd() + "/images/" + str(file), ContentFile(file.read()))
+                import hashlib
+
+                og_filename = str(file).split(".")
+                types = og_filename[len(og_filename) - 1]
+                hash_filename = hashlib.md5(str(file).encode("utf-8")).hexdigest() + "." + types
+                path = default_storage.save(os.getcwd() + "/images/" + hash_filename, ContentFile(file.read()))
                 uploaded_images.append(path.replace(os.getcwd(), ""))
             else:
                 return {'error_code': 1, 'error_msg': 'Upload file format is incorrect', "error_file": str(file)}, \
