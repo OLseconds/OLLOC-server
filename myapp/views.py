@@ -62,8 +62,15 @@ class UserViewSet(viewsets.ViewSet):
         user = self.token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
-        following = Followers.objects.filter(follower=user.id)
-        follower = Followers.objects.filter(following=user.id)
+
+        user_id = request.query_params.get("user_id")
+        if user_id:
+            user = authUser.objects.get(id=user_id)
+
+        following = Followers.objects.filter(follower=user_id)
+        follower = Followers.objects.filter(following=user_id)
+
+
 
         return Response({
             'id': user.id,
@@ -72,6 +79,7 @@ class UserViewSet(viewsets.ViewSet):
             'email': user.email,
             'is_superuser': user.is_superuser,
             'is_active': user.is_active,
+            'profile_img': "https://placehold.it/58x58",
             'follower': len(follower),
             'following': len(following),
         }, status=status.HTTP_200_OK)

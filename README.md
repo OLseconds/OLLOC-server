@@ -103,7 +103,11 @@ Thanks to @zaeval
 - request
     - Header : 
         - Authorization : 발급 된 토큰
-
+    - QUERY PARAMETER
+        | key | explanation | type | etc |
+        |--- |--- |--- |--- |
+        |user_id|조회할 회원번호| integer| 미 입력 시 본인 정보 출력 | 
+        
 - RESPONSE
     - Header :
         - Content-Type : application/json
@@ -129,6 +133,7 @@ Thanks to @zaeval
         |email| 회원 이메일 | string |  |
         |is_superuser| 관리자 여부 | boolean |  |
         |is_active| 활성화 여부 | boolean |  |
+        |profile_img|프로필 이미지| string(url)|
         |follower|팔로워 수 | integer|
         |following|팔로잉 수 | integer|
         
@@ -141,7 +146,7 @@ Thanks to @zaeval
 "is_active": true
 }
 
-## 팔로잉
+## 팔로잉 목록 조회
 - URI : olloc.kr3.kr:8000/follow/
 - METHOD : GET
 - request
