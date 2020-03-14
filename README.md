@@ -282,6 +282,15 @@ Thanks to @zaeval
         |owner["profile_img"] | 회원 프로필 사진 | string(url) |
         |last_modified | 마지막 수정시간 | time |
         |description | 게시물 내 |string |
+        |comments| 댓글 정보 | array| 순차적 |
+        |comments[n]["id"]| 댓글 번호 | integer|
+        |comments[n]["description"]| 댓글 내용 | string|
+        |comments[n]["owner"]| 댓글 소유자 정보 | array|
+        |comments[n]["owner"]["id"]| 댓글 소유자 번호 | integer|
+        |comments[n]["owner"]["username"]| 댓글 소유자 아이디 | string|
+        |comments[n]["owner"]["name"]| 댓글 소유자 이름 | string|
+        |comments[n]["owner"]["profile_img"]| 댓글 소유자 프로필사진 | string(url)|
+        |comments[n]["date"]| 댓글 작성 일자 | string(date+time)|
         |lx| 지도 x값 | array(string)|
         |ly| 지도 y값 | array(string)|
         |map_info|맵설명|array(string)|
