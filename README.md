@@ -295,7 +295,58 @@ Thanks to @zaeval
         |ly| 지도 y값 | array(string)|
         |map_info|맵설명|array(string)|
         |img| 사진 | array(string)|
-        
+    ex
+    
+    {
+"id": 14,
+"owner":{
+"id": 1,
+"username": "paperlee",
+"name": "이종휘",
+"profile_img": "https://placehold.it/58x58"
+},
+"last_modified": null,
+"description": "test",
+"comments":[
+{
+"id": 1,
+"description": "test",
+"owner":{
+"id": 1,
+"username": "paperlee",
+"name": "이종휘",
+"profile_img": "https://placehold.it/58x58"
+},
+"date": "2020-03-06T18:23:28.079170Z"
+},
+{
+"id": 3,
+"description": "test",
+"owner":{"id": 1, "username": "paperlee", "name": "이종휘", "profile_img": "https://placehold.it/58x58"…},
+"date": "2020-03-14T07:53:21.278721Z"
+}
+],
+"post_id":[
+14,
+14
+],
+"lx":[
+"x1",
+"x2"
+],
+"ly":[
+"y1",
+"y2"
+],
+"map_info":[
+"test",
+"test2"
+],
+"img":[
+"http://olloc.kr3.kr:8000/images/1495713718223_PCnk75g.jpg",
+"http://olloc.kr3.kr:8000/images/1495714334123_6FhS14R.jpg"
+]
+}
        
 
 ## 글쓰기
