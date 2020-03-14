@@ -129,6 +129,11 @@ class PostView(viewsets.ViewSet):
                 'profile_img': "https://placehold.it/58x58",
             }
 
+            comm = self.snsmod.get_comments(post_id)
+            return_dict["comments"] = []
+            for x in comm:
+                return_dict["comments"].append(x)
+
             for x in postInfo_obj:
                 for key, value in PostInfoSerializer(x).data.items():
                     if not key in return_dict:
@@ -178,6 +183,7 @@ class Comment(viewsets.ViewSet):
     @permission_classes((IsAuthenticated,))
     def delete(self, request):
         pass
+
 
 class FollowViewSet(viewsets.ViewSet):
     snsmod = SNS()

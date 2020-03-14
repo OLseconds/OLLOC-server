@@ -148,7 +148,6 @@ class SNS:
         except Posts.DoesNotExist:
             return{'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
 
-
     def write_comment(self, request):
         token = TokenMod()
         user = token.tokenAuth(request)
@@ -161,11 +160,13 @@ class SNS:
             return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
 
         if request.data.get("post_id") and request.data.get("description"):
-            comm = Comments(post_id=request.data.get("post_id"), owner=user.id, description=request.data.get("description"))
+            comm = Comments(post_id=request.data.get("post_id"), owner=user.id,
+                            description=request.data.get("description"))
             comm.save()
         else:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
         return {'message': "success"}, status.HTTP_200_OK
+
 
     def follow_list(self, user_id):
         following = Followers.objects.filter(follower=user_id)
@@ -179,3 +180,27 @@ class SNS:
         for x in following:
             re_dict["following_list"].append(FollowersSerializer(x).data["following"])
         return re_dict
+    def get_comments(self, post_id):
+        """
+        this method prams is not rest-framework request
+        :return: comments dict data  in list
+        """
+        re_list = []
+        comm = Comments.objects.filter(post_id=post_id)
+
+        usermod = UserMod()
+        for x in comm:
+            owner = usermod.user_profile(x.owner)
+
+            re_list.append({
+                "id": x.id,
+                "description": x.description,
+                "owner": {
+                    'id': owner.id,
+                    'username': owner.username,
+                    'name': owner.last_name,
+                    'profile_img': "https://placehold.it/58x58"
+                },
+                "date": x.date,
+            })
+        return re_list
