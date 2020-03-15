@@ -167,7 +167,6 @@ class SNS:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
         return {'message': "success"}, status.HTTP_200_OK
 
-
     def follow_list(self, user_id):
         following = Followers.objects.filter(follower=user_id)
         follower = Followers.objects.filter(following=user_id)
@@ -180,6 +179,7 @@ class SNS:
         for x in following:
             re_dict["following_list"].append(FollowersSerializer(x).data["following"])
         return re_dict
+
     def get_comments(self, post_id):
         """
         this method prams is not rest-framework request
@@ -194,7 +194,7 @@ class SNS:
 
             re_list.append({
                 "id": x.id,
-                "description": x.description,
+                "comment": x.description,
                 "owner": {
                     'id': owner.id,
                     'username': owner.username,
