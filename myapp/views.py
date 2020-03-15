@@ -244,3 +244,14 @@ class FollowViewSet(viewsets.ViewSet):
             return Response({'error_code': 1, 'error_msg': "Unfollowing target is invalid"}, status.HTTP_400_BAD_REQUEST)
         except Followers.DoesNotExist:
             return Response({'error_code': 2, 'error_msg': "Not Followed target"}, status.HTTP_400_BAD_REQUEST)
+
+
+class Timeline(viewsets.ViewSet):
+    snsmod = SNS()
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
+    def list(self, request):
+        user_id = request.query_params.get("user_id")
+        timeline = self.snsmod.get_userTimeline(user_id)
+
+        return Response(timeline, status.HTTP_200_OK)

@@ -29,6 +29,8 @@ router.register(r'auth', views.Auth, basename='auth')
 router.register(r'posts', views.PostView, basename='posts')
 router.register(r'comment', views.Comment, basename='comment')
 router.register(r'follow', views.FollowViewSet, basename='follow')
+router.register(r'timeline', views.Timeline, basename='follow')
+
 
 schema_view = get_schema_view(
    openapi.Info(
