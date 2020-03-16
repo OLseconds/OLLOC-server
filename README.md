@@ -458,12 +458,21 @@ Thanks to @zaeval
             | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
             | 400 |1| 해당 게시물이 존재하지 않음 | 
             
+## 개인 타임라인 조회
+- URI : olloc.kr3.kr:8000/posts/
+- METHOD : GET
 
+- REQUEST :
+    - Header : 
+    - QUERY PARAMETERS  : 
+
+        | key | explanation | type |
+        |--- |--- |--- |
+        |post_id| 게시물 번호 | integer |
     
-    - SUCCESS RESPONSE
-        
-        | key | explanation | type | remarks |
-        | --- |------------ |----- | ------- |
+- RESPONSE
+
+게시물 조회와 동일한 RESPONSE (단, Array형태)
 ## 좋아요
 
 # 냉면 맛집면
