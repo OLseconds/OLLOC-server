@@ -31,9 +31,27 @@ class Auth(viewsets.ViewSet):
     token = TokenMod()
     user = token
 
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
     def list(self, request):
-        # auth = tokenAuth(self, request)
-        return Response({"msg": "hi"}, status=status.HTTP_200_OK)
+        user = self.token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
+
+        following = Followers.objects.filter(follower=user.id)
+        follower = Followers.objects.filter(following=user.id)
+
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'name': user.last_name,
+            'email': user.email,
+            'is_superuser': user.is_superuser,
+            'is_active': user.is_active,
+            'profile_img': "https://placehold.it/58x58",
+            'follower': len(follower),
+            'following': len(following),
+        }, status=status.HTTP_200_OK)
 
     def post(self, request):
         '''
@@ -56,8 +74,6 @@ class UserViewSet(viewsets.ViewSet):
     usermod = UserMod()
     token = TokenMod()
 
-    @authentication_classes((TokenAuthentication,))
-    @permission_classes((IsAuthenticated,))
     def list(self, request):
         user = self.token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":

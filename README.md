@@ -96,17 +96,12 @@ Thanks to @zaeval
         | key | explanation | type | remarks |
         | --- |------------ |----- | ------- |
 
-
-## 회원정보 조회
-- URI : olloc.kr3.kr:8000/user/
+## 로그인 정보 조회 (본인)
+- URI : olloc.kr3.kr:8000/auth/
 - METHOD : GET
 - request
     - Header : 
-        - Authorization : 발급 된 토큰
-    - QUERY PARAMETER
-        | key | explanation | type | etc |
-        |--- |--- |--- |--- |
-        |user_id|조회할 회원번호| integer| 미 입력 시 본인 정보 출력 | 
+        - Content-Type : application/json
         
 - RESPONSE
     - Header :
@@ -129,7 +124,7 @@ Thanks to @zaeval
     
         | key | explanation | type | remarks |
         | --- |------------ |----- | ------- |
-        |id| 회원 번 | integer |
+        |id| 회원 번호 | integer |
         |username| 회원 아이디  | string |
         |email| 회원 이메일 | string |  |
         |is_superuser| 관리자 여부 | boolean |  |
@@ -137,15 +132,37 @@ Thanks to @zaeval
         |profile_img|프로필 이미지| string(url)|
         |follower|팔로워 수 | integer|
         |following|팔로잉 수 | integer|
+
+## 회원정보 조회
+- URI : olloc.kr3.kr:8000/user/
+- METHOD : GET
+- request
+    - Header : 
+        - Authorization : 발급 된 토큰
+    - QUERY PARAMETER
+        | key | explanation | type |
+        |--- |--- |--- |--- |
+        |user_id|조회할 회원번호| integer| 
         
-{
-"id": 1,
-"username": "paperlee",
-"name": "이종휘",
-"email": "paperlee@kookmin.ac.kr",
-"is_superuser": false,
-"is_active": true
-}
+- RESPONSE
+    - Header :
+        - Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용     | string  |
+    
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |1| 일치하는 회원이 없음 |
+    
+    - SUCCESS RESPONSE
+    
+    로그인 정보 조회와 동일 
 
 ## 팔로잉 목록 조회
 - URI : olloc.kr3.kr:8000/follow/
