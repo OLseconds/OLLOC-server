@@ -284,7 +284,7 @@ Thanks to @zaeval
         |description | 게시물 내 |string |
         |comments| 댓글 정보 | array| 순차적 |
         |comments[n]["id"]| 댓글 번호 | integer|
-        |comments[n]["description"]| 댓글 내용 | string|
+        |comments[n]["comment"]| 댓글 내용 | string|
         |comments[n]["owner"]| 댓글 소유자 정보 | array|
         |comments[n]["owner"]["id"]| 댓글 소유자 번호 | integer|
         |comments[n]["owner"]["username"]| 댓글 소유자 아이디 | string|
@@ -459,7 +459,7 @@ Thanks to @zaeval
             | 400 |1| 해당 게시물이 존재하지 않음 | 
             
 ## 개인 타임라인 조회
-- URI : olloc.kr3.kr:8000/posts/
+- URI : olloc.kr3.kr:8000/timeline/
 - METHOD : GET
 
 - REQUEST :
@@ -468,7 +468,8 @@ Thanks to @zaeval
 
         | key | explanation | type |
         |--- |--- |--- |
-        |post_id| 게시물 번호 | integer |
+        |user_id| 게시물들을 불러올 회원 | integer |
+    QUERY PARAMETERS 미 전송 시 내가 팔로우 한 사람들 ( 메인화면 타임라인)
     
 - RESPONSE
 
