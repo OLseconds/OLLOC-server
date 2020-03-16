@@ -140,13 +140,15 @@ Thanks to @zaeval
     - Header : 
         - Authorization : 발급 된 토큰
     - QUERY PARAMETER
+    
         | key | explanation | type |
-        |--- |--- |--- |--- |
+        |--- |--- |--- |
         |user_id|조회할 회원번호| integer| 
         
 - RESPONSE
     - Header :
         - Content-Type : application/json
+        
     - ERROR RESPONSE
     
         |    key   | explanation |   type  |
