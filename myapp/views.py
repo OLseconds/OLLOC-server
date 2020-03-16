@@ -248,14 +248,8 @@ class FollowViewSet(viewsets.ViewSet):
 
 class Timeline(viewsets.ViewSet):
     snsmod = SNS()
-    @authentication_classes((TokenAuthentication,))
-    @permission_classes((IsAuthenticated,))
-    def list(self, request):
-        token = TokenMod()
-        user = token.tokenAuth(request)
-        if str(type(user)) == "<class 'tuple'>":
-            return Response(user[0], user[1])
 
+    def list(self, request):
         user_id = request.query_params.get("user_id")
         if user_id is not None:
             timeline = self.snsmod.get_userTimeline(user_id)
