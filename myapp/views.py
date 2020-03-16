@@ -251,7 +251,16 @@ class Timeline(viewsets.ViewSet):
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
     def list(self, request):
-        user_id = request.query_params.get("user_id")
-        timeline = self.snsmod.get_userTimeline(user_id)
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
 
-        return Response(timeline, status.HTTP_200_OK)
+        user_id = request.query_params.get("user_id")
+        if user_id is not None:
+            timeline = self.snsmod.get_userTimeline(user_id)
+            return Response(timeline, status.HTTP_200_OK)
+        else: # 실제 타임라인 가져오기
+
+            return Response(self.snsmod.get_followingTimeline(user.id), status.HTTP_200_OK)
+

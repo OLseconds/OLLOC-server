@@ -51,64 +51,59 @@ class UserMod:
 
 class SNS:
     usermod = UserMod()
+    SERVER_URL = getattr(settings, 'SERVER_URL', 'localhost')
     def __init__(self):
         pass
 
     def get_userTimeline(self, user_id):
         timeline = list()
-        SERVER_URL = getattr(settings, 'SERVER_URL', 'localhost')
 
         for e in Posts.objects.filter(owner=user_id).order_by('-id'):
-            ps = PostsSerializer(e)
-            postInfo_obj = PostInfo.objects.filter(post_id=e.id)
-
-            return_dict = ps.data
-            owner = self.usermod.user_profile(return_dict["owner"])
-
-            return_dict["owner"] = {
-                'id': owner.id,
-                'username': owner.username,
-                'name': owner.last_name,
-                'profile_img': "https://placehold.it/58x58",
-            }
-
-            comm = self.get_comments(e.id)
-            return_dict["comments"] = []
-            for x in comm:
-                return_dict["comments"].append(x)
-
-            for x in postInfo_obj:
-                for key, value in PostInfoSerializer(x).data.items():
-                    if not key in return_dict:
-                        return_dict[key] = []
-
-                    return_dict[key].append(SERVER_URL + value if key is "img" else value)
-            timeline.append(return_dict)
+            timeline.append(self.get_post(e.id))
 
         return timeline
 
     def get_followingTimeline(self, user_id):
-        pass
+        flist = self.follow_list(user_id)
+        ftimeline = []
+        for x in flist["following_list"]:
+            post = self.get_userTimeline(x)
+            if post:
+                ftimeline.append(self.get_userTimeline(x))
+
+        # ftimeline = sorted(ftimeline, key=lambda post: post["id"])
+
+        return ftimeline
 
 
     def get_post(self, post_id):
-        try:
-            post_obj = Posts.objects.get(id=post_id)
-            ps = PostsSerializer(post_obj)
-            postInfo_obj = PostInfo.objects.filter(post_id=post_id)
+        e = Posts.objects.get(id=post_id)
+        ps = PostsSerializer(e)
+        postInfo_obj = PostInfo.objects.filter(post_id=post_id)
 
-            return_dict = ps.data
+        return_dict = ps.data
+        owner = self.usermod.user_profile(return_dict["owner"])
 
-            for x in postInfo_obj:
-                for key, value in PostInfoSerializer(x).data.items():
-                    if not key in return_dict:
-                        return_dict[key] = []
+        return_dict["owner"] = {
+            'id': owner.id,
+            'username': owner.username,
+            'name': owner.last_name,
+            'profile_img': "https://placehold.it/58x58",
+        }
 
-                    return_dict[key].append(SERVER_URL + value if key is "img" else value)
+        comm = self.get_comments(e.id)
+        return_dict["comments"] = []
+        for x in comm:
+            return_dict["comments"].append(x)
 
-            return Response(return_dict, status=status.HTTP_200_OK)
-        except ValueError:
-            pass
+        for x in postInfo_obj:
+            for key, value in PostInfoSerializer(x).data.items():
+                if not key in return_dict:
+                    return_dict[key] = []
+
+                return_dict[key].append(self.SERVER_URL + value if key is "img" else value)
+        return return_dict
+
 
     def write_post(self, request):
         """
