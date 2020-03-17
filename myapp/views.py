@@ -199,14 +199,19 @@ class Comment(viewsets.ViewSet):
 
 class FollowViewSet(viewsets.ViewSet):
     snsmod = SNS()
-    @authentication_classes((TokenAuthentication,))
-    @permission_classes((IsAuthenticated,))
     def list(self, request):
         token = TokenMod()
         user = token.tokenAuth(request)
         m = request.query_params.get("user_id")
-        search_user_id = user.id if not m and user else m
-        re_dict = self.snsmod.follow_list(search_user_id, is_following_id=user.id if user else False)
+
+        try:
+            search_user_id = user.id if not m and user else m
+            is_following_id = user.id if user else False
+        except AttributeError:
+            search_user_id = m
+            is_following_id = False
+
+        re_dict = self.snsmod.follow_list(search_user_id, is_following_id=is_following_id)
 
         return Response(re_dict, status.HTTP_200_OK)
 
