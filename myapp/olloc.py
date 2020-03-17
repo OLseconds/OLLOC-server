@@ -56,20 +56,20 @@ class SNS:
         pass
 
     def get_userTimeline(self, user_id):
-        timeline = list()
-
-        for e in Posts.objects.filter(owner=user_id).order_by('-id'):
+        timeline = []
+        timeline_queryset = Posts.objects.filter(owner=user_id).order_by('-id')
+        for e in timeline_queryset:
             timeline.append(self.get_post(e.id))
 
         return timeline
 
     def get_followingTimeline(self, user_id):
-        flist = self.follow_list(user_id)
+        flist = self.follow_list(user_id, request=False)
         ftimeline = []
         for x in flist["following_list"]:
-            post = self.get_userTimeline(x)
+            post = self.get_userTimeline(x["id"])
             if post:
-                ftimeline.append(self.get_userTimeline(x))
+                ftimeline.append(self.get_userTimeline(x["id"]))
 
         # ftimeline = sorted(ftimeline, key=lambda post: post["id"])
 
@@ -200,17 +200,28 @@ class SNS:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
         return {'message': "success"}, status.HTTP_200_OK
 
-    def follow_list(self, user_id):
+    def follow_list(self, user_id, is_following_id=False):
         following = Followers.objects.filter(follower=user_id)
         follower = Followers.objects.filter(following=user_id)
+
+        is_following = Followers.objects.filter(follower=is_following_id, following=user_id)
+
         re_dict = {
             "follower": len(follower),
             "following": len(following),
+            "is_following": True if is_following else False,
             "following_list": []
         }
 
         for x in following:
-            re_dict["following_list"].append(FollowersSerializer(x).data["following"])
+            user = self.usermod.user_profile(x.following)
+            re_dict["following_list"].append({
+                'id': user.id,
+                'username': user.username,
+                'name': user.last_name,
+                'profile_img': "https://placehold.it/58x58",
+            })
+
         return re_dict
 
     def get_comments(self, post_id):

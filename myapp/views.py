@@ -75,10 +75,6 @@ class UserViewSet(viewsets.ViewSet):
     token = TokenMod()
 
     def list(self, request):
-        user = self.token.tokenAuth(request)
-        if str(type(user)) == "<class 'tuple'>":
-            return Response(user[0], user[1])
-
         user_id = request.query_params.get("user_id")
         if user_id:
             try:
@@ -208,11 +204,9 @@ class FollowViewSet(viewsets.ViewSet):
     def list(self, request):
         token = TokenMod()
         user = token.tokenAuth(request)
-        if str(type(user)) == "<class 'tuple'>":
-            return Response(user[0], user[1])
         m = request.query_params.get("user_id")
-
-        re_dict = self.snsmod.follow_list(m if m else user.id)
+        search_user_id = user.id if not m and user else m
+        re_dict = self.snsmod.follow_list(search_user_id, is_following_id=user.id if user else False)
 
         return Response(re_dict, status.HTTP_200_OK)
 
@@ -231,7 +225,6 @@ class FollowViewSet(viewsets.ViewSet):
             return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST)
         try:
             following_id = authUser.objects.get(id=following)
-
             f = Followers.objects.get_or_create(follower=user.id, following=following)
 
             return Response({'message': "success"}, status.HTTP_200_OK)
@@ -271,6 +264,5 @@ class Timeline(viewsets.ViewSet):
             timeline = self.snsmod.get_userTimeline(user_id)
             return Response(timeline, status.HTTP_200_OK)
         else: # 실제 타임라인 가져오기
-
             return Response(self.snsmod.get_followingTimeline(user.id), status.HTTP_200_OK)
 
