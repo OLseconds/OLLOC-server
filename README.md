@@ -196,6 +196,19 @@ Thanks to @zaeval
             | 400 | 0 | 파라미터 오류 |
             | 400 | 1 | 팔로잉 대상이 올바르지 않음 |
 
+        - SUCCESS RESPONSE
+        
+        |   key  | explanation | type | remarks |
+        | ------ | ----------- |----- | ------- |
+        |follower| 팔로워 수 | integer |
+        |following| 팔로잉 수 | integer|
+        |is_following| 토큰 사용자가 팔로우 하고 있는지 여부 | boolean|
+        |following_list|팔로잉 사용자 정보| array|
+        |following_list[n]["id"]| 회원 번호 | integer|
+        |following_list[n]["username"]| 회원 아이디 | integer|
+        |following_list[n]["name"]| 회원 이름 | integer|
+        |following_list[n]["profile_img"]| 프로필 사진 | integer|
+
 ## 팔로잉
 - URI : olloc.kr3.kr:8000/follow/
 - METHOD : POST
@@ -226,7 +239,9 @@ Thanks to @zaeval
             | 400 |-1| 토큰에러 auth 로그인 참고 |
             | 400 | 0 | 파라미터 오류 |
             | 400 | 1 | 팔로잉 대상이 올바르지 않음 |
-    
+            
+
+
 ## 언팔로잉
 - URI : olloc.kr3.kr:8000/follow/
 - METHOD : DELETE
