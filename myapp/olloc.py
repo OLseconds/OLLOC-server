@@ -64,7 +64,7 @@ class SNS:
         return timeline
 
     def get_followingTimeline(self, user_id):
-        flist = self.follow_list(user_id, request=False)
+        flist = self.follow_list(user_id)
         ftimeline = []
         for x in flist["following_list"]:
             post = self.get_userTimeline(x["id"])

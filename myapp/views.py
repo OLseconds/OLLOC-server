@@ -269,5 +269,8 @@ class Timeline(viewsets.ViewSet):
             timeline = self.snsmod.get_userTimeline(user_id)
             return Response(timeline, status.HTTP_200_OK)
         else: # 실제 타임라인 가져오기
+            token = TokenMod()
+            user = token.tokenAuth(request)
+
             return Response(self.snsmod.get_followingTimeline(user.id), status.HTTP_200_OK)
 
