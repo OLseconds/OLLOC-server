@@ -502,7 +502,7 @@ Thanks to @zaeval
 
         | key | explanation | type |
         |--- |--- |--- |
-        |user_id| 게시물들을 불러올 회원 | integer |
+        |username| 게시물들을 불러올 회원 아이디 | string |
     QUERY PARAMETERS 미 전송 시 내가 팔로우 한 사람들 ( 메인화면 타임라인)
     
 - RESPONSE

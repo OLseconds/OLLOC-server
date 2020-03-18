@@ -264,9 +264,10 @@ class Timeline(viewsets.ViewSet):
     snsmod = SNS()
 
     def list(self, request):
-        user_id = request.query_params.get("user_id")
-        if user_id is not None:
-            timeline = self.snsmod.get_userTimeline(user_id)
+        username = request.query_params.get("username")
+        if username is not None:
+            user = authUser.objects.get(username=username)
+            timeline = self.snsmod.get_userTimeline(user.id)
             return Response(timeline, status.HTTP_200_OK)
         else: # 실제 타임라인 가져오기
             token = TokenMod()
@@ -274,3 +275,11 @@ class Timeline(viewsets.ViewSet):
 
             return Response(self.snsmod.get_followingTimeline(user.id), status.HTTP_200_OK)
 
+
+class LikeSet(viewsets.ViewSet):
+    def put(self, request):
+        pass
+    def delete(self, request):
+        pass
+
+# like_post(self, post_id, user_id)
