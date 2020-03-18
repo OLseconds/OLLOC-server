@@ -69,7 +69,8 @@ class SNS:
         for x in flist["following_list"]:
             post = self.get_userTimeline(x["id"])
             if post:
-                ftimeline.append(self.get_userTimeline(x["id"]))
+                for a in self.get_userTimeline(x["id"]):
+                    ftimeline.append(a)
 
         # ftimeline = sorted(ftimeline, key=lambda post: post["id"])
 
