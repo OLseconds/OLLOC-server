@@ -133,32 +133,7 @@ class PostView(viewsets.ViewSet):
         if post_id is None:
             return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            post_obj = Posts.objects.get(id=post_id)
-            ps = PostsSerializer(post_obj)
-            postInfo_obj = PostInfo.objects.filter(post_id=post_id)
-
-            return_dict = ps.data
-            owner = usermod.user_profile(return_dict["owner"])
-
-            return_dict["owner"] = {
-                'id': owner.id,
-                'username': owner.username,
-                'name': owner.last_name,
-                'profile_img': "https://placehold.it/58x58",
-            }
-
-            comm = self.snsmod.get_comments(post_id)
-            return_dict["comments"] = []
-            for x in comm:
-                return_dict["comments"].append(x)
-
-            for x in postInfo_obj:
-                for key, value in PostInfoSerializer(x).data.items():
-                    if not key in return_dict:
-                        return_dict[key] = []
-
-                    return_dict[key].append(SERVER_URL + value if key is "img" else value)
-
+            return_dict = self.snsmod.get_post(post_id)
             return Response(return_dict, status=status.HTTP_200_OK)
         except ValueError:
             return Response({'error_code': 1, 'error_msg': "Post does not exist"}, status=status.HTTP_400_BAD_REQUEST)
@@ -297,9 +272,33 @@ class LikeSet(viewsets.ViewSet):
             return Response(user[0], user[1])
 
         post_id = request.data.get("post_id")
-        self.snsmod.like_post(self, post_id, user.id)
+        if not post_id:
+            return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
+        post = Posts(id=post_id)
+        if not post:
+            return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
+        self.snsmod.like_post(post_id, user.id)
 
+        return Response({'message': "success"}, status.HTTP_200_OK)
+
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
     def delete(self, request):
-        pass
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
+
+        post_id = request.query_params.get("post_id")
+        if not post_id:
+            return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
+        post = Posts(id=post_id)
+        if not post:
+            return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
+
+        self.snsmod.unlike_post(post_id, user.id)
+
+
+        return Response({'message': "success"}, status.HTTP_200_OK)
 
 # like_post(self, post_id, user_id)

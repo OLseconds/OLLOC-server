@@ -84,6 +84,7 @@ class SNS:
 
         return_dict = ps.data
         owner = self.usermod.user_profile(return_dict["owner"])
+        return_dict.update({"like": self.get_likecount(post_id)})
 
         return_dict["owner"] = {
             'id': owner.id,
@@ -91,7 +92,7 @@ class SNS:
             'name': owner.last_name,
             'profile_img': "https://placehold.it/58x58",
         }
-
+        self.get_likecount(post_id)
         comm = self.get_comments(e.id)
         return_dict["comments"] = []
         for x in comm:
@@ -268,6 +269,14 @@ class SNS:
             })
         return re_list
 
+    def get_likecount(self, post_id):
+        like = Like.objects.filter(post_id=post_id)
+
+        return len(like)
+
     def like_post(self, post_id, user_id):
-        like = Like(liker=user_id, post_id=post_id)
-        like.save()
+        Like.objects.get_or_create(liker=user_id, post_id=post_id)
+
+    def unlike_post(self, post_id, user_id):
+        like = Like.objects.get_or_create(liker=user_id, post_id=post_id)
+        like[0].delete()
