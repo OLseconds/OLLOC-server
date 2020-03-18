@@ -144,6 +144,7 @@ Thanks to @zaeval
         | key | explanation | type |
         |--- |--- |--- |
         |user_id|조회할 회원번호| integer| 
+        |username|조회할 회원아이디(옵션)|string|
         
 - RESPONSE
     - Header :

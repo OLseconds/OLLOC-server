@@ -29,7 +29,8 @@ router.register(r'auth', views.Auth, basename='auth')
 router.register(r'posts', views.PostView, basename='posts')
 router.register(r'comment', views.Comment, basename='comment')
 router.register(r'follow', views.FollowViewSet, basename='follow')
-router.register(r'timeline', views.Timeline, basename='follow')
+router.register(r'timeline', views.Timeline, basename='timeline')
+router.register(r'like', views.LikeSet, basename='like')
 
 
 schema_view = get_schema_view(
@@ -46,11 +47,6 @@ schema_view = get_schema_view(
 )
 urlpatterns = [
     url(r'^', include(router.urls)),
-    # url('auth/', views.Auth.as_view()),
-    # url('posts/', views.PostView.as_view()),
-    # url('user/', views.UserViewSet.as_view()),
-    # url('comment/', views.Comment.as_view()),
-    # url('follow/', views.Follow.as_view()),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
     url(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),

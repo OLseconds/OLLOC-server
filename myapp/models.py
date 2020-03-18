@@ -43,3 +43,7 @@ class PushList(models.Model):
     description = models.TextField(verbose_name="푸시 내용", blank=False, null=True)
     link = models.DateTimeField(verbose_name="푸시 시간", auto_now_add=True, null=True)
 
+class Like(models.Model):
+    liker = models.IntegerField(verbose_name="좋아요 누른 사람", blank=False, null=True)
+    post_id = models.IntegerField(verbose_name="대상 게시물", blank=False, null=True)
+    date = models.DateTimeField(verbose_name="좋아요 시간", auto_now_add=True, null=True)

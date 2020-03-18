@@ -76,11 +76,17 @@ class UserViewSet(viewsets.ViewSet):
 
     def list(self, request):
         user_id = request.query_params.get("user_id")
-        if user_id:
-            try:
-                user = self.usermod.user_profile(user_id)
-            except authUser.DoesNotExist:
-                return Response({'error_code': 1, 'error_msg': 'This user does not exist'})
+
+        username = request.query_params.get("username")
+        if not user_id:
+            u = authUser.objects.get(username=username)
+            user_id = u.id
+
+        try:
+            user = self.usermod.user_profile(user_id)
+        except authUser.DoesNotExist:
+            return Response({'error_code': 1, 'error_msg': 'This user does not exist'})
+
 
         following = Followers.objects.filter(follower=user_id)
         follower = Followers.objects.filter(following=user_id)
@@ -264,21 +270,35 @@ class Timeline(viewsets.ViewSet):
     snsmod = SNS()
 
     def list(self, request):
-        username = request.query_params.get("username")
-        if username is not None:
-            user = authUser.objects.get(username=username)
-            timeline = self.snsmod.get_userTimeline(user.id)
+        user_id = request.query_params.get("user_id")
+        if user_id is not None:
+            timeline = self.snsmod.get_userTimeline(user_id)
             return Response(timeline, status.HTTP_200_OK)
         else: # 실제 타임라인 가져오기
             token = TokenMod()
             user = token.tokenAuth(request)
-
+            if str(type(user)) == "<class 'tuple'>":
+                return Response(user[0], user[1])
             return Response(self.snsmod.get_followingTimeline(user.id), status.HTTP_200_OK)
 
 
 class LikeSet(viewsets.ViewSet):
-    def put(self, request):
+    snsmod = SNS()
+
+    def list(self, request):
         pass
+
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
+    def put(self, request):
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
+
+        post_id = request.data.get("post_id")
+        self.snsmod.like_post(self, post_id, user.id)
+
     def delete(self, request):
         pass
 

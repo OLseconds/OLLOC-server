@@ -2,7 +2,7 @@ from myapp.serializers import *
 from django.contrib.auth.models import User as authUser
 from myapp.token import TokenMod
 from rest_framework import status
-from myapp.models import Posts, PostInfo, Comments
+from myapp.models import Posts, PostInfo, Comments, Like
 import re, os
 from django.conf import settings
 
@@ -131,6 +131,8 @@ class SNS:
 
         allow_type = ["image/png", "image/jpeg", "image/gif"]
         uploaded_images = []
+        from PIL import ImageOps, Image
+
         for file in images:
             if file.content_type in allow_type:
                 import hashlib
@@ -139,7 +141,23 @@ class SNS:
                 types = og_filename[len(og_filename) - 1]
                 hash_filename = hashlib.md5(str(file).encode("utf-8")).hexdigest() + "." + types
                 path = default_storage.save(os.getcwd() + "/images/" + hash_filename, ContentFile(file.read()))
-                uploaded_images.append(path.replace(os.getcwd(), ""))
+                url = path.replace(os.getcwd(), "")
+                im = Image.open("." + url)
+                x, y = im.size
+                if x > y:
+                    new_size = x
+                    x_offset = 0
+                    y_offset = int((x-y) / 2)
+                elif x < y:
+                    new_size = y
+                    x_offset = int((y-x) / 2)
+                    y_offset = 0
+
+                new_image = Image.new("RGB", (new_size, new_size), "white")
+                new_image.paste(im, (x_offset, y_offset))
+
+                new_image.save("." + url)
+                uploaded_images.append(url)
             else:
                 return {'error_code': 1, 'error_msg': 'Upload file format is incorrect', "error_file": str(file)}, \
                        status.HTTP_400_BAD_REQUEST
@@ -249,3 +267,7 @@ class SNS:
                 "date": x.date,
             })
         return re_list
+
+    def like_post(self, post_id, user_id):
+        like = Like(liker=user_id, post_id=post_id)
+        like.save()
