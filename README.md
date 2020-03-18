@@ -540,6 +540,35 @@ Thanks to @zaeval
             | 400 | 0 | 파라미터 오류 |
             | 400 | 1 | 좋아요 대상 게시물이 삭제됐거나 존재하지 않음 |
 
+## 좋아요 취
+- URI : olloc.kr3.kr:8000/like/
+- METHOD : DELETE
+- request
+    - Header : 
+        - Authorization : 발급 된 토큰
+    - QUERY PARAMETERS
+    
+        | key | explanation | type |
+        |--- |--- |--- |
+        |post_id|대상 게시물 번호| integer|
+        
+- RESPONSE
+    - Header :
+        - Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용     | string  |
+    
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |-1| 토큰에러 auth 로그인 참고 |
+            | 400 | 0 | 파라미터 오류 |
+            | 400 | 1 | 좋아요 대상 게시물이 삭제됐거나 존재하지 않음 |
 
 # 냉면 맛집면
 - NAME : 숙이네 왕냉면
