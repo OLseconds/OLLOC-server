@@ -33,3 +33,9 @@ class FollowersSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Followers
         fields = ('follower', 'following', 'date')
+
+
+class TimelineSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Posts
+        fields = ('id', 'owner', 'last_modified', 'description')

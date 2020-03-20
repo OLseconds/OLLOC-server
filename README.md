@@ -316,7 +316,9 @@ Thanks to @zaeval
         |owner["name"] | 회원 이름 | string |
         |owner["profile_img"] | 회원 프로필 사진 | string(url) |
         |last_modified | 마지막 수정시간 | time |
-        |description | 게시물 내 |string |
+        |description | 게시물 내용 |string |
+        |like | 좋아요 개수 | integer |
+        |likeState | 토큰 사용자가 좋아요를 눌렀는지 여부 | boolean |
         |comments| 댓글 정보 | array| 순차적 |
         |comments[n]["id"]| 댓글 번호 | integer|
         |comments[n]["comment"]| 댓글 내용 | string|

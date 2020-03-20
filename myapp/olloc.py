@@ -83,14 +83,17 @@ class SNS:
         return ftimeline
 
 
-    def get_post(self, post_id):
+    def get_post(self, post_id, is_like_user=0):
         e = Posts.objects.get(id=post_id)
         ps = PostsSerializer(e)
         postInfo_obj = PostInfo.objects.filter(post_id=post_id)
 
         return_dict = ps.data
         owner = self.usermod.user_profile(return_dict["owner"])
-        return_dict.update({"like": self.get_likecount(post_id)})
+        return_dict.update({
+            "like": self.get_likecount(post_id),
+            "likeState": self.get_likeState(post_id, is_like_user)
+        })
 
         return_dict["owner"] = {
             'id': owner.id,
@@ -160,10 +163,10 @@ class SNS:
                     x_offset = int((y-x) / 2)
                     y_offset = 0
 
-                new_image = Image.new("RGB", (new_size, new_size), "white")
-                new_image.paste(im, (x_offset, y_offset))
-
-                new_image.save("." + url)
+                if x != y:
+                    new_image = Image.new("RGB", (new_size, new_size), "white")
+                    new_image.paste(im, (x_offset, y_offset))
+                    new_image.save("." + url)
                 uploaded_images.append(url)
             else:
                 return {'error_code': 1, 'error_msg': 'Upload file format is incorrect', "error_file": str(file)}, \
@@ -286,3 +289,13 @@ class SNS:
     def unlike_post(self, post_id, user_id):
         like = Like.objects.get_or_create(liker=user_id, post_id=post_id)
         like[0].delete()
+
+    def get_likeState(self, post_id, user_id):
+        if not user_id:
+            return False
+        try:
+            Like.objects.get(liker=user_id, post_id=post_id)
+        except:
+            return False
+
+        return True

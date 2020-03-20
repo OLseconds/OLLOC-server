@@ -14,8 +14,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from myapp.models import Followers
 from myapp.olloc import *
-from rest_framework.views import APIView
 import os
+
 
 class Auth(viewsets.ViewSet):
     """
@@ -67,9 +67,6 @@ class Auth(viewsets.ViewSet):
         return Response(tokenResult[0], status=tokenResult[1])
 
 
-
-
-
 class UserViewSet(viewsets.ViewSet):
     usermod = UserMod()
     token = TokenMod()
@@ -86,7 +83,6 @@ class UserViewSet(viewsets.ViewSet):
             user = self.usermod.user_profile(user_id)
         except authUser.DoesNotExist:
             return Response({'error_code': 1, 'error_msg': 'This user does not exist'})
-
 
         following = Followers.objects.filter(follower=user_id)
         follower = Followers.objects.filter(following=user_id)
@@ -121,19 +117,22 @@ class PostView(viewsets.ViewSet):
     snsmod = SNS()
 
     serializer_class = PostsSerializer
+
     # 게시물 가져오기
     def list(self, request):
         # 토큰 인증
-
-        SERVER_URL = getattr(settings, 'SERVER_URL', 'localhost')
-        usermod = UserMod()
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        user_id = 0
+        if str(type(user)) != "<class 'tuple'>":
+            user_id = user.id
 
         post_id = request.query_params.get("post_id")
 
         if post_id is None:
             return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            return_dict = self.snsmod.get_post(post_id)
+            return_dict = self.snsmod.get_post(post_id, is_like_user=user_id)
             return Response(return_dict, status=status.HTTP_200_OK)
         except ValueError:
             return Response({'error_code': 1, 'error_msg': "Post does not exist"}, status=status.HTTP_400_BAD_REQUEST)
@@ -157,6 +156,7 @@ class PostView(viewsets.ViewSet):
 
 class Comment(viewsets.ViewSet):
     serializer_class = CommentsSerializer
+    queryset = Comments
     snsmod = SNS()
 
     # 댓글 가져오기
@@ -179,7 +179,10 @@ class Comment(viewsets.ViewSet):
 
 
 class FollowViewSet(viewsets.ViewSet):
+    # serializer_class = FollowersSerializer
+    # queryset = Followers
     snsmod = SNS()
+
     def list(self, request):
         token = TokenMod()
         user = token.tokenAuth(request)
@@ -236,20 +239,23 @@ class FollowViewSet(viewsets.ViewSet):
 
             return Response({'message': "success"}, status.HTTP_200_OK)
         except authUser.DoesNotExist:
-            return Response({'error_code': 1, 'error_msg': "Unfollowing target is invalid"}, status.HTTP_400_BAD_REQUEST)
+            return Response({'error_code': 1, 'error_msg': "Unfollowing target is invalid"},
+                            status.HTTP_400_BAD_REQUEST)
         except Followers.DoesNotExist:
             return Response({'error_code': 2, 'error_msg': "Not Followed target"}, status.HTTP_400_BAD_REQUEST)
 
 
 class Timeline(viewsets.ViewSet):
     snsmod = SNS()
+    serializer_class = TimelineSerializer
+    queryset = Posts.objects.all()
 
     def list(self, request):
         user_id = request.query_params.get("user_id")
         if user_id is not None:
             timeline = self.snsmod.get_userTimeline(user_id)
             return Response(timeline, status.HTTP_200_OK)
-        else: # 실제 타임라인 가져오기
+        else:  # 실제 타임라인 가져오기
             token = TokenMod()
             user = token.tokenAuth(request)
             if str(type(user)) == "<class 'tuple'>":
@@ -261,7 +267,7 @@ class LikeSet(viewsets.ViewSet):
     snsmod = SNS()
 
     def list(self, request):
-        pass
+        return Response({'message': "success"}, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
@@ -272,8 +278,10 @@ class LikeSet(viewsets.ViewSet):
             return Response(user[0], user[1])
 
         post_id = request.data.get("post_id")
-        if not post_id:
+
+        if post_id == None:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
+
         post = Posts(id=post_id)
         if not post:
             return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
@@ -297,7 +305,6 @@ class LikeSet(viewsets.ViewSet):
             return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
 
         self.snsmod.unlike_post(post_id, user.id)
-
 
         return Response({'message': "success"}, status.HTTP_200_OK)
 
