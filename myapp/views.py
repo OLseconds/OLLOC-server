@@ -16,6 +16,7 @@ from myapp.models import Followers
 from myapp.olloc import *
 import os
 
+SERVER_URL = getattr(settings, 'SERVER_URL', 'localhost')
 
 class Auth(viewsets.ViewSet):
     """
@@ -63,7 +64,6 @@ class Auth(viewsets.ViewSet):
         '''
         token = TokenMod()
         tokenResult = token.createToken(request)
-        print(request.data)
         return Response(tokenResult[0], status=tokenResult[1])
 
 
@@ -251,16 +251,62 @@ class Timeline(viewsets.ViewSet):
     queryset = Posts.objects.all()
 
     def list(self, request):
+        login_user = 0
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) != "<class 'tuple'>":
+            login_user = user.id
+
         user_id = request.query_params.get("user_id")
+        start = request.query_params.get("start")
+        count = request.query_params.get("count")
+        if not start:
+            start = 0
+        if not count:
+            count = 9
+        start = int(start)
+        count = int(count)
+
+        next_start = int(start) + 9
+        next_count = int(count)
+
         if user_id is not None:
-            timeline = self.snsmod.get_userTimeline(user_id)
-            return Response(timeline, status.HTTP_200_OK)
+            timeline = self.snsmod.get_userTimeline(user_id, start, count, login_user)
+            timelineCount = self.snsmod.get_timelineCount(user_id)
+
+            if timelineCount - next_start < next_count:
+                next_count = timelineCount - next_start
+
+            if timelineCount > next_start:
+                next_url = SERVER_URL + "/timeline/?user_id=" + str(user_id) + "&start=" + str(next_start) + "&count=" + str(next_count)
+            else:
+                next_url = False
         else:  # 실제 타임라인 가져오기
             token = TokenMod()
             user = token.tokenAuth(request)
             if str(type(user)) == "<class 'tuple'>":
                 return Response(user[0], user[1])
-            return Response(self.snsmod.get_followingTimeline(user.id), status.HTTP_200_OK)
+
+            timelineCount = self.snsmod.get_ftimelineCount(user.id)
+
+            if timelineCount - next_start < next_count:
+                next_count = timelineCount - next_start
+
+            if timelineCount > next_start:
+                next_url = SERVER_URL + "/timeline/?start=" + str(next_start) + "&count=" + str(next_count)
+            else:
+                next_url = False
+
+            timeline = self.snsmod.get_followingTimeline(user.id, start, count)
+
+        re_dict = {
+            "count": timelineCount,
+            "next": next_url,
+            "results": timeline,
+        }
+
+        return Response(re_dict, status.HTTP_200_OK)
+
 
 
 class LikeSet(viewsets.ViewSet):

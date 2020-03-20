@@ -495,20 +495,33 @@ Thanks to @zaeval
             | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
             | 400 |1| 해당 게시물이 존재하지 않음 | 
             
-## 개인 타임라인 조회
+## 타임라인 조회
 - URI : olloc.kr3.kr:8000/timeline/
 - METHOD : GET
 
 - REQUEST :
-    - Header : 
+
+        - Authorization : 발급 된 토큰
     - QUERY PARAMETERS  : 
 
         | key | explanation | type |
         |--- |--- |--- |
         |username| 게시물들을 불러올 회원 아이디 | string |
-    QUERY PARAMETERS 미 전송 시 내가 팔로우 한 사람들 ( 메인화면 타임라인)
+        |start| 시작할 게시물 index|integer|
+        |count| 가져올 게시물 개수 | integer|
+        
+        QUERY PARAMETERS 미 전송 시 내가 팔로우 한 사람들 ( 메인화면 타임라인)
     
 - RESPONSE
+    - Header : 
+        - Content-Type : application/json
+        
+        |   key  | explanation | type | remarks |
+        | ------ | ----------- |----- | ------- |
+        |count | 게시물 개수   |integer |
+        |next | 다음 요청할 타임라인 url | string(url) |
+        |results | 게시물 데이터  | array | 게시물 API의 array형태 리턴 |
+
 
 게시물 조회와 동일한 RESPONSE (단, Array형태)
 ## 좋아요

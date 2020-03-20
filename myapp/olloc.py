@@ -55,32 +55,34 @@ class SNS:
     def __init__(self):
         pass
 
-    def get_userTimeline(self, user_id):
+    def get_userTimeline(self, user_id, start, limit, login_user=0):
         timeline = []
-        timeline_queryset = Posts.objects.filter(owner=user_id).order_by('-id')
+        timeline_queryset = Posts.objects.filter(owner=user_id).order_by('-id')[start:start+limit]
         for e in timeline_queryset:
-            timeline.append(self.get_post(e.id))
+            timeline.append(self.get_post(e.id, login_user))
 
         return timeline
 
-    def get_followingTimeline(self, user_id):
+    def get_followingTimeline(self, user_id, start, limit):
         flist = self.follow_list(user_id)
+        flist_num = [x["id"] for x in flist["following_list"]]
+        flist_num.append(user_id)
         ftimeline = []
-
-        post = self.get_userTimeline(user_id)
-        if post:
-            for a in self.get_userTimeline(user_id):
-                ftimeline.append(a)
-
-        for x in flist["following_list"]:
-            post = self.get_userTimeline(x["id"])
-            if post:
-                for a in self.get_userTimeline(x["id"]):
-                    ftimeline.append(a)
-        ftimeline = sorted(ftimeline, key=lambda k: k["id"], reverse=True)
-
+        post = Posts.objects.filter(owner__in=flist_num).order_by("-id")[start:start+limit]
+        print(start, start + limit)
+        for x in post:
+            ftimeline.append(self.get_post(x.id))
 
         return ftimeline
+
+    def get_ftimelineCount(self, user_id):
+        flist = self.follow_list(user_id)
+        flist_num = [x["id"] for x in flist["following_list"]]
+        flist_num.append(user_id)
+        return Posts.objects.filter(owner__in=flist_num).count()
+
+    def get_timelineCount(self, user_id):
+        return Posts.objects.filter(owner=user_id).count()
 
 
     def get_post(self, post_id, is_like_user=0):
@@ -127,7 +129,6 @@ class SNS:
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return user[0], user[1]
-        print(request.data)
         # 필수 파라미터 검사
         for x in ["lx", "ly", "image", "content"]:
             if not request.data.get(x):
@@ -242,6 +243,7 @@ class SNS:
             "following_list": []
         }
 
+
         for x in following:
             user = self.usermod.user_profile(x.following)
             re_dict["following_list"].append({
@@ -250,6 +252,7 @@ class SNS:
                 'name': user.last_name,
                 'profile_img': "https://placehold.it/58x58",
             })
+
 
         return re_dict
 
