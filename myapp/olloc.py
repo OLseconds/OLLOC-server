@@ -240,9 +240,9 @@ class SNS:
             "follower": len(follower),
             "following": len(following),
             "is_following": True if is_following else False,
-            "following_list": []
+            "following_list": [],
+            "follower_list": []
         }
-
 
         for x in following:
             user = self.usermod.user_profile(x.following)
@@ -253,6 +253,14 @@ class SNS:
                 'profile_img': "https://placehold.it/58x58",
             })
 
+        for x in follower:
+            user = self.usermod.user_profile(x.follower)
+            re_dict["follower_list"].append({
+                'id': user.id,
+                'username': user.username,
+                'name': user.last_name,
+                'profile_img': "https://placehold.it/58x58",
+            })
 
         return re_dict
 

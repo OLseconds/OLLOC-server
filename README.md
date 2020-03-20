@@ -209,6 +209,11 @@ Thanks to @zaeval
         |following_list[n]["username"]| 회원 아이디 | integer|
         |following_list[n]["name"]| 회원 이름 | integer|
         |following_list[n]["profile_img"]| 프로필 사진 | integer|
+        |follower_list|팔로워 사용자 정보| array|
+        |following_list[n]["id"]| 회원 번호 | integer|
+        |following_list[n]["username"]| 회원 아이디 | integer|
+        |following_list[n]["name"]| 회원 이름 | integer|
+        |following_list[n]["profile_img"]| 프로필 사진 | integer|
 
 ## 팔로잉
 - URI : olloc.kr3.kr:8000/follow/
