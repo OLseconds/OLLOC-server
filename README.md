@@ -101,12 +101,13 @@ Thanks to @zaeval
 - METHOD : POST
 - REQUEST :
     - Header : 
+        - Authorization : 발급 된 토큰
         - Content-Type : multipart/form-data
+        
     - Body : (json)
 
         | key | explanation | type |
         |--- |--- |--- |
-        |user_id| 회원 번호 | integer |
         |image| 프로필사진 | file |
 - RESPONSE
     - Header : 
@@ -123,6 +124,8 @@ Thanks to @zaeval
             | HTTP STATE | error_code | explanation |
             |----------- | ---------- | ----------- |
             | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
+            | 400 |1|업로드 파일 형식 오류 image/XXX 이 아님 | 아이디에 특수문자 존재 등|
+
     
     - SUCCESS RESPONSE
         

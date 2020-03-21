@@ -63,15 +63,14 @@ class SNS:
 
         return timeline
 
-    def get_followingTimeline(self, user_id, start, limit):
+    def get_followingTimeline(self, user_id, start, limit, login_user=0):
         flist = self.follow_list(user_id)
         flist_num = [x["id"] for x in flist["following_list"]]
         flist_num.append(user_id)
         ftimeline = []
         post = Posts.objects.filter(owner__in=flist_num).order_by("-id")[start:start+limit]
-        print(start, start + limit)
         for x in post:
-            ftimeline.append(self.get_post(x.id))
+            ftimeline.append(self.get_post(x.id, login_user))
 
         return ftimeline
 
@@ -252,7 +251,7 @@ class SNS:
                 'id': user.id,
                 'username': user.username,
                 'name': user.last_name,
-                'profile_img': "https://placehold.it/58x58",
+                'profile_img': self.profile_img(user.id),
             })
 
         for x in follower:
@@ -261,7 +260,7 @@ class SNS:
                 'id': user.id,
                 'username': user.username,
                 'name': user.last_name,
-                'profile_img': "https://placehold.it/58x58",
+                'profile_img': self.profile_img(user.id),
             })
 
         return re_dict
@@ -285,7 +284,7 @@ class SNS:
                     'id': owner.id,
                     'username': owner.username,
                     'name': owner.last_name,
-                    'profile_img': "https://placehold.it/58x58"
+                    'profile_img': self.profile_img(owner.id)
                 },
                 "date": x.date,
             })
@@ -315,10 +314,10 @@ class SNS:
 
     def profile_img(self, user_id):
         try:
-            pf = Profile.objects.get(user_id=user_id)
-            return self.SERVER_URL + pf.profile_img
+            pf = Profile.objects.filter(user_id=user_id).order_by("-id")
+            return self.SERVER_URL + pf[0].profile_img
         except:
-            return "https://placehold.it/100x100"
+            return self.SERVER_URL + "/images/default.png"
 
     def put_push(self, owner, description, link):
         PushList(owner=owner, description=description, link=link)

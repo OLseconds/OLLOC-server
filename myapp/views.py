@@ -31,6 +31,7 @@ class Auth(viewsets.ViewSet):
     serializer_class = UserSerializer
     token = TokenMod()
     user = token
+    snsmod = SNS()
 
     @authentication_classes((TokenAuthentication,))
     @permission_classes((IsAuthenticated,))
@@ -49,7 +50,7 @@ class Auth(viewsets.ViewSet):
             'email': user.email,
             'is_superuser': user.is_superuser,
             'is_active': user.is_active,
-            'profile_img': SNS.profile_img(user.id),
+            'profile_img': self.snsmod.profile_img(user_id=user.id),
             'follower': len(follower),
             'following': len(following),
         }, status=status.HTTP_200_OK)
@@ -69,6 +70,7 @@ class Auth(viewsets.ViewSet):
 
 class UserViewSet(viewsets.ViewSet):
     usermod = UserMod()
+    snsmod = SNS()
     token = TokenMod()
 
     def list(self, request):
@@ -94,7 +96,7 @@ class UserViewSet(viewsets.ViewSet):
             'email': user.email,
             'is_superuser': user.is_superuser,
             'is_active': user.is_active,
-            'profile_img': SNS.profile_img(user.id),
+            'profile_img': self.snsmod.profile_img(user.id),
             'follower': len(follower),
             'following': len(following),
         }, status=status.HTTP_200_OK)
@@ -107,12 +109,11 @@ class UserViewSet(viewsets.ViewSet):
         user = token.tokenAuth(request)
         if str(type(user)) == "<class 'tuple'>":
             return Response(user[0], user[1])
-        user_id = request.data.get('user_id')
+        user_id = user.id
 
         image = request.data.get('image')
         from django.core.files.storage import default_storage
         from django.core.files.base import ContentFile
-
         allow_type = ["image/png", "image/jpeg", "image/gif"]
 
         from PIL import Image
@@ -140,14 +141,16 @@ class UserViewSet(viewsets.ViewSet):
                 new_image = Image.new("RGB", (new_size, new_size), "white")
                 new_image.paste(im, (x_offset, y_offset))
                 new_image.save("." + url)
+
+            profile = Profile(user_id=user_id, profile_img=url)
+            profile.save()
+
+            return Response({"msg": "success"}, status.HTTP_200_OK)
         else:
-            return {'error_code': 1, 'error_msg': 'Upload file format is incorrect', "error_file": str(image)}, \
-                   status.HTTP_400_BAD_REQUEST
+            return Response({'error_code': 1, 'error_msg': 'Upload file format is incorrect', "error_file": str(image)}, \
+                   status.HTTP_400_BAD_REQUEST)
 
-        profile = Profile(user_id=user_id, profile_img=url)
-        profile.save()
 
-        return Response({"msg": "success"}, status.HTTP_200_OK)
 
     # 회원가입
     def put(self, request):
@@ -322,7 +325,7 @@ class Timeline(viewsets.ViewSet):
         next_count = int(count)
 
         if user_id is not None:
-            timeline = self.snsmod.get_userTimeline(user_id, start, count, login_user)
+            timeline = self.snsmod.get_userTimeline(user_id, start, count, login_user=login_user)
             timelineCount = self.snsmod.get_timelineCount(user_id)
 
             if timelineCount - next_start < next_count:
@@ -348,7 +351,7 @@ class Timeline(viewsets.ViewSet):
             else:
                 next_url = False
 
-            timeline = self.snsmod.get_followingTimeline(user.id, start, count)
+            timeline = self.snsmod.get_followingTimeline(user.id, start, count, login_user=login_user)
 
         re_dict = {
             "count": timelineCount,
