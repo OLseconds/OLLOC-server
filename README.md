@@ -59,7 +59,7 @@ Thanks to @zaeval
 
 ## 회원가입
 - URI : olloc.kr3.kr:8000/user/
-- METHOD : POST
+- METHOD : PUT
 - REQUEST :
     - Header : 
         - Content-Type : application/json
@@ -95,7 +95,39 @@ Thanks to @zaeval
         
         | key | explanation | type | remarks |
         | --- |------------ |----- | ------- |
+        
+## 프로필 사진 바꾸기
+- URI : olloc.kr3.kr:8000/user/
+- METHOD : POST
+- REQUEST :
+    - Header : 
+        - Content-Type : multipart/form-data
+    - Body : (json)
 
+        | key | explanation | type |
+        |--- |--- |--- |
+        |user_id| 회원 번호 | integer |
+        |image| 프로필사진 | file |
+- RESPONSE
+    - Header : 
+        - Content-Type : application/json
+    - ERROR RESPONSE
+    
+        |    key   | explanation |   type  |
+        | -------- | ----------- |-------- |
+        |error_code| 오류 코드     | integer | 
+        |error_msg | 오류 내용  | string  |
+        
+        - error_code (오류 별 반환 내용 및 상태)
+        
+            | HTTP STATE | error_code | explanation |
+            |----------- | ---------- | ----------- |
+            | 400 |0| 파라미터 오류, 상세 내용은 error_msg 참고 |
+    
+    - SUCCESS RESPONSE
+        
+        | key | explanation | type | remarks |
+        | --- |------------ |----- | ------- |
 ## 로그인 정보 조회 (본인)
 - URI : olloc.kr3.kr:8000/auth/
 - METHOD : GET
@@ -320,7 +352,7 @@ Thanks to @zaeval
         |owner["username"] | 회원 아이디   | string |
         |owner["name"] | 회원 이름 | string |
         |owner["profile_img"] | 회원 프로필 사진 | string(url) |
-        |last_modified | 마지막 수정시간 | time |
+        |date | 작성시간 | time |
         |description | 게시물 내용 |string |
         |like | 좋아요 개수 | integer |
         |likeState | 토큰 사용자가 좋아요를 눌렀는지 여부 | boolean |

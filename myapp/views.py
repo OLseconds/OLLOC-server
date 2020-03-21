@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes, action
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from myapp.models import Followers
+from myapp.models import Followers, Profile
 from myapp.olloc import *
 import os
 
@@ -49,7 +49,7 @@ class Auth(viewsets.ViewSet):
             'email': user.email,
             'is_superuser': user.is_superuser,
             'is_active': user.is_active,
-            'profile_img': "https://placehold.it/58x58",
+            'profile_img': SNS.profile_img(user.id),
             'follower': len(follower),
             'following': len(following),
         }, status=status.HTTP_200_OK)
@@ -94,12 +94,63 @@ class UserViewSet(viewsets.ViewSet):
             'email': user.email,
             'is_superuser': user.is_superuser,
             'is_active': user.is_active,
-            'profile_img': "https://placehold.it/58x58",
+            'profile_img': SNS.profile_img(user.id),
             'follower': len(follower),
             'following': len(following),
         }, status=status.HTTP_200_OK)
 
+    # 회원정보 수정
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
     def post(self, request):
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
+        user_id = request.data.get('user_id')
+
+        image = request.data.get('image')
+        from django.core.files.storage import default_storage
+        from django.core.files.base import ContentFile
+
+        allow_type = ["image/png", "image/jpeg", "image/gif"]
+
+        from PIL import Image
+
+        if image.content_type in allow_type:
+            import hashlib
+
+            og_filename = str(image).split(".")
+            types = og_filename[len(og_filename) - 1]
+            hash_filename = hashlib.md5(str(image).encode("utf-8")).hexdigest() + "." + types
+            path = default_storage.save(os.getcwd() + "/images/" + hash_filename, ContentFile(image.read()))
+            url = path.replace(os.getcwd(), "")
+            im = Image.open("." + url)
+            x, y = im.size
+            if x > y:
+                new_size = x
+                x_offset = 0
+                y_offset = int((x - y) / 2)
+            elif x < y:
+                new_size = y
+                x_offset = int((y - x) / 2)
+                y_offset = 0
+
+            if x != y:
+                new_image = Image.new("RGB", (new_size, new_size), "white")
+                new_image.paste(im, (x_offset, y_offset))
+                new_image.save("." + url)
+        else:
+            return {'error_code': 1, 'error_msg': 'Upload file format is incorrect', "error_file": str(image)}, \
+                   status.HTTP_400_BAD_REQUEST
+
+        profile = Profile(user_id=user_id, profile_img=url)
+        profile.save()
+
+        return Response({"msg": "success"}, status.HTTP_200_OK)
+
+    # 회원가입
+    def put(self, request):
         try:
             response_msg = self.usermod.add(username=request.data['username'], password=request.data['password'],
                                             name=request.data['name'], mail=request.data['mail'])
@@ -328,7 +379,7 @@ class LikeSet(viewsets.ViewSet):
         if post_id == None:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
 
-        post = Posts(id=post_id)
+        post = Posts.objects.get(id=post_id)
         if not post:
             return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
         self.snsmod.like_post(post_id, user.id)

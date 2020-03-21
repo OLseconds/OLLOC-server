@@ -2,7 +2,7 @@ from myapp.serializers import *
 from django.contrib.auth.models import User as authUser
 from myapp.token import TokenMod
 from rest_framework import status
-from myapp.models import Posts, PostInfo, Comments, Like
+from myapp.models import Posts, PostInfo, Comments, Like, PushList, Profile
 import re, os
 from django.conf import settings
 
@@ -96,12 +96,11 @@ class SNS:
             "like": self.get_likecount(post_id),
             "likeState": self.get_likeState(post_id, is_like_user)
         })
-
         return_dict["owner"] = {
             'id': owner.id,
             'username': owner.username,
             'name': owner.last_name,
-            'profile_img': "https://placehold.it/58x58",
+            'profile_img': self.profile_img(owner.id),
         }
         self.get_likecount(post_id)
         comm = self.get_comments(e.id)
@@ -115,6 +114,7 @@ class SNS:
                     return_dict[key] = []
 
                 return_dict[key].append(self.SERVER_URL + value if key is "img" else value)
+
         return return_dict
 
 
@@ -218,7 +218,7 @@ class SNS:
             return user[0], user[1]
 
         try:
-            Posts.objects.get(id=request.data.get("post_id"))
+            post = Posts.objects.get(id=request.data.get("post_id"))
         except Posts.DoesNotExist:
             return {'error_code': 1, 'error_msg': "Post does not exist"}, status.HTTP_400_BAD_REQUEST
 
@@ -228,6 +228,8 @@ class SNS:
             comm.save()
         else:
             return {'error_code': 0, 'error_msg': "Missing parameters"}, status.HTTP_400_BAD_REQUEST
+
+        self.put_push(post.owner, user.username + "님이 댓글을 달았습니다.", post.id)
         return {'message': "success"}, status.HTTP_200_OK
 
     def follow_list(self, user_id, is_following_id=False):
@@ -310,3 +312,13 @@ class SNS:
             return False
 
         return True
+
+    def profile_img(self, user_id):
+        try:
+            pf = Profile.objects.get(user_id=user_id)
+            return self.SERVER_URL + pf.profile_img
+        except:
+            return "https://placehold.it/100x100"
+
+    def put_push(self, owner, description, link):
+        PushList(owner=owner, description=description, link=link)
