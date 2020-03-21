@@ -134,6 +134,7 @@ Thanks to @zaeval
 - request
     - Header : 
         - Content-Type : application/json
+        - Authorization : 발급 된 토큰
         
 - RESPONSE
     - Header :
