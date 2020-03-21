@@ -8,6 +8,12 @@ class User(models.Model):
     name = models.CharField(verbose_name="회원 이름", max_length=15, blank=False, null=False)
     mail = models.CharField(verbose_name="회원 이메일", max_length=30, blank=False, null=False)
 
+class Profile(models.Model):
+    user_id = models.IntegerField(verbose_name="회원 번호", blank=True, null=True)
+    description = models.CharField(verbose_name="회원 소개", max_length=100, blank=True, null=True)
+    site = models.URLField(verbose_name="회원 웹 사이트", blank=True, null=True)
+    profile_img = models.CharField(verbose_name="회원 프로필 사진", max_length=500, blank=True, null=True)
+
 
 class Posts(models.Model):
     owner = models.IntegerField(verbose_name="게시물 소유자", blank=False, null=True)
@@ -41,7 +47,8 @@ class Followers(models.Model):
 class PushList(models.Model):
     owner = models.IntegerField(verbose_name="푸시 주인", blank=False, null=True)
     description = models.TextField(verbose_name="푸시 내용", blank=False, null=True)
-    link = models.DateTimeField(verbose_name="푸시 시간", auto_now_add=True, null=True)
+    link = models.URLField(verbose_name="이동 주소", null=True)
+    date = models.DateTimeField(verbose_name="푸시 시간", auto_now_add=True, null=True)
 
 class Like(models.Model):
     liker = models.IntegerField(verbose_name="좋아요 누른 사람", blank=False, null=True)
