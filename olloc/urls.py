@@ -25,12 +25,14 @@ from drf_yasg import openapi
 
 router = routers.DefaultRouter()
 router.register(r'user', views.UserViewSet, basename='user')
+router.register(r'search', views.SearchViewSet, basename='search')
 router.register(r'auth', views.Auth, basename='auth')
 router.register(r'posts', views.PostView, basename='posts')
 router.register(r'comment', views.Comment, basename='comment')
 router.register(r'follow', views.FollowViewSet, basename='follow')
 router.register(r'timeline', views.Timeline, basename='timeline')
 router.register(r'like', views.LikeSet, basename='like')
+router.register(r'post-nearby', views.PostNearby, basename='post-nearby')
 
 
 schema_view = get_schema_view(

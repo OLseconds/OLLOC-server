@@ -165,6 +165,43 @@ class UserViewSet(viewsets.ViewSet):
         # 탈퇴 따위 불가능
         return Response({'message': 'get'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class SearchViewSet(viewsets.ViewSet):
+    usermod = UserMod()
+    snsmod = SNS()
+    token = TokenMod()
+
+    @authentication_classes((TokenAuthentication,))
+    @permission_classes((IsAuthenticated,))
+    def list(self, request):
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        if str(type(user)) == "<class 'tuple'>":
+            return Response(user[0], user[1])
+
+        username = request.query_params.get("username")
+
+        if not username:
+            return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        search = authUser.objects.filter(username__contains=username)
+
+        if not search:
+            return Response({'error_code': 1, 'error_msg': 'This user does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        re_dict = []
+        for x in search:
+            re_dict.append({
+            'id': x.id,
+            'username': x.username,
+            'name': x.last_name,
+            'profile_img': self.snsmod.profile_img(x.id),
+            })
+
+        return Response(re_dict, status=status.HTTP_200_OK)
+
+    # 회원정보 수정
+
+
 
 class PostView(viewsets.ViewSet):
     usermod = UserMod()
@@ -206,6 +243,30 @@ class PostView(viewsets.ViewSet):
         delete_post = self.snsmod.delete_post(request)
 
         return Response(delete_post[0], delete_post[1])
+
+class PostNearby(viewsets.ViewSet):
+    def list(self, request):
+        # 토큰 인증
+        token = TokenMod()
+        user = token.tokenAuth(request)
+        user_id = 0
+        if str(type(user)) != "<class 'tuple'>":
+            user_id = user.id
+
+        post_id = int(request.query_params.get("post_id"))
+        index = int(request.query_params.get("index"))
+        if post_id is None:
+            return Response({'error_code': 0, 'error_msg': "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            from django.contrib.gis.measure import Distance
+            post = PostInfo.objects.filter(post_id=post_id)
+
+
+
+            return Response({'msg': 1}, status=status.HTTP_200_OK)
+
+        except ValueError:
+            return Response({'error_code': 1, 'error_msg': "Post does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Comment(viewsets.ViewSet):
